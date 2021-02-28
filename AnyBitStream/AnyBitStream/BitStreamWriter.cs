@@ -23,7 +23,6 @@ namespace AnyBitStream
         /// </summary>
         public BitStreamWriter() : this(new BitStream())
         {
-
         }
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace AnyBitStream
         /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
         public BitStreamWriter(bool allowUnalignedOperations) : this(new BitStream(allowUnalignedOperations))
         {
-
         }
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace AnyBitStream
         /// <param name="capacity"></param>
         public BitStreamWriter(int capacity) : this(new BitStream(capacity))
         {
-
         }
 
         /// <summary>
@@ -50,7 +47,17 @@ namespace AnyBitStream
         /// <param name="buffer"></param>
         public BitStreamWriter(byte[] buffer) : this(new BitStream(buffer))
         {
+        }
 
+        /// <summary>
+        /// Write bits to a stream
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="leaveOpen">True to leave the stream open when dispoed</param>
+        /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
+        public BitStreamWriter(byte[] buffer, bool leaveOpen, bool allowUnalignedOperations) : this(new BitStream(buffer), leaveOpen, allowUnalignedOperations)
+        {
+            BaseStream.AllowUnalignedOperations = allowUnalignedOperations;
         }
 
         /// <summary>
@@ -61,7 +68,6 @@ namespace AnyBitStream
         /// <param name="count"></param>
         public BitStreamWriter(byte[] buffer, int offset, int count) : this(new BitStream(buffer, offset, count))
         {
-
         }
 
         /// <summary>
@@ -71,7 +77,6 @@ namespace AnyBitStream
         /// <param name="encoding"></param>
         public BitStreamWriter(byte[] buffer, Encoding encoding) : this(new BitStream(buffer), encoding, DefaultLeaveOpen)
         {
-
         }
 
         /// <summary>
@@ -79,7 +84,7 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="encoding"></param>
-        /// <param name="leaveOpen">True to leave the stream open</param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
         public BitStreamWriter(byte[] buffer, Encoding encoding, bool leaveOpen) : this(new BitStream(buffer), encoding, leaveOpen)
         {
         }
@@ -88,7 +93,7 @@ namespace AnyBitStream
         /// Write bits to a stream
         /// </summary>
         /// <param name="buffer"></param>
-        /// <param name="leaveOpen">True to leave the stream open</param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
         public BitStreamWriter(byte[] buffer, bool leaveOpen) : this(new BitStream(buffer), _defaultEncoding, leaveOpen)
         {
         }
@@ -97,12 +102,21 @@ namespace AnyBitStream
         /// Write bits to a stream
         /// </summary>
         /// <param name="stream"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
+        public BitStreamWriter(BitStream stream, bool leaveOpen, bool allowUnalignedOperations) : base(stream, _defaultEncoding, leaveOpen)
+        {
+            BaseStream.AllowUnalignedOperations = allowUnalignedOperations;
+        }
+
+        /// <summary>
+        /// Write bits to a stream
+        /// </summary>
+        /// <param name="stream"></param>
         /// <param name="encoding"></param>
-        /// <param name="leaveOpen">True to leave the stream open</param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
         public BitStreamWriter(BitStream stream, Encoding encoding, bool leaveOpen) : base(stream, encoding, leaveOpen)
         {
-            if (!stream.CanWrite)
-                throw new InvalidOperationException($"Stream is not writable!");
         }
 
         /// <summary>

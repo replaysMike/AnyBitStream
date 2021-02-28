@@ -23,7 +23,6 @@ namespace AnyBitStream
         /// </summary>
         public BitStreamReader() : this(new BitStream())
         {
-
         }
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace AnyBitStream
         /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
         public BitStreamReader(bool allowUnalignedOperations) : this(new BitStream(allowUnalignedOperations))
         {
-
         }
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace AnyBitStream
         /// <param name="capacity"></param>
         public BitStreamReader(int capacity) : this(new BitStream(capacity))
         {
-
         }
 
         /// <summary>
@@ -50,7 +47,25 @@ namespace AnyBitStream
         /// <param name="buffer"></param>
         public BitStreamReader(byte[] buffer) : this(new BitStream(buffer))
         {
+        }
 
+        /// <summary>
+        /// Read bits from a stream
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        public BitStreamReader(byte[] buffer, bool leaveOpen) : this(new BitStream(buffer), _defaultEncoding, leaveOpen)
+        {
+        }
+
+        /// <summary>
+        /// Read bits from a stream
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
+        public BitStreamReader(byte[] buffer, bool leaveOpen, bool allowUnalignedOperations) : this(new BitStream(buffer), leaveOpen, allowUnalignedOperations)
+        {
         }
 
         /// <summary>
@@ -59,7 +74,16 @@ namespace AnyBitStream
         /// <param name="buffer"></param>
         public BitStreamReader(byte[] buffer, Encoding encoding) : this(new BitStream(buffer), encoding, DefaultLeaveOpen)
         {
+        }
 
+        /// <summary>
+        /// Read bits from a stream
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="encoding"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        public BitStreamReader(byte[] buffer, Encoding encoding, bool leaveOpen) : this(new BitStream(buffer), encoding, leaveOpen)
+        {
         }
 
         /// <summary>
@@ -70,14 +94,13 @@ namespace AnyBitStream
         /// <param name="count"></param>
         public BitStreamReader(byte[] buffer, int offset, int count) : this(new BitStream(buffer, offset, count))
         {
-
         }
 
         /// <summary>
         /// Read bits from a stream
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="leaveOpen">True to leave the stream open</param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
         public BitStreamReader(BitStream stream, bool leaveOpen) : base(stream, _defaultEncoding, leaveOpen)
         {
         }
@@ -86,8 +109,19 @@ namespace AnyBitStream
         /// Read bits from a stream
         /// </summary>
         /// <param name="stream"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
+        public BitStreamReader(BitStream stream, bool leaveOpen, bool allowUnalignedOperations) : base(stream, _defaultEncoding, leaveOpen)
+        {
+            BaseStream.AllowUnalignedOperations = allowUnalignedOperations;
+        }
+
+        /// <summary>
+        /// Read bits from a stream
+        /// </summary>
+        /// <param name="stream"></param>
         /// <param name="encoding"></param>
-        /// <param name="leaveOpen">True to leave the stream open</param>
+        /// <param name="leaveOpen">True to leave the stream openwhen disposed</param>
         public BitStreamReader(BitStream stream, Encoding encoding, bool leaveOpen) : base(stream, encoding, leaveOpen)
         {
         }
@@ -98,7 +132,6 @@ namespace AnyBitStream
         /// <param name="stream"></param>
         public BitStreamReader(BitStream stream) : this(stream, _defaultEncoding, DefaultLeaveOpen)
         {
-            if (!stream.CanRead) throw new InvalidOperationException($"Stream is not readable!");
         }
 
         #region Overrides
