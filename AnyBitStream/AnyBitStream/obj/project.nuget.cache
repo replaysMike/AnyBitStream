@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "EOsqH00mWtu4VDl4eGJguxm8uqz0mzVca//d8dysZgInrBBO9dO/s5qnzQoOzEULyiXeeBuI51OsU3G+tf9lug==",
+  "success": true,
+  "projectFilePath": "b:\\gitrepo\\personalcode\\AnyBitStream\\AnyBitStream\\AnyBitStream\\AnyBitStream.csproj",
+  "expectedPackageFiles": [
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net461;net462;net48;net5.0</TargetFrameworks>
+		<Authors>Michael Brown</Authors>
+		<Company>Refactor Software</Company>
+		<Description>Work with bits efficiently in a stream using standard streams and extending BinaryReader/BinaryWriter.</Description>
+		<PackageProjectUrl>https://github.com/replaysMike/AnyBitStream</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/replaysMike/AnyBitStream</RepositoryUrl>
+		<PackageTags>bitstream bits binaryreader binarywriter anybitstream refactor michael brown</PackageTags>
+		<PackageReleaseNotes>Work with bits efficiently in a stream using standard streams and extending BinaryReader/BinaryWriter.</PackageReleaseNotes>
+		<Version>1.0.0</Version>
+		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+</Project>

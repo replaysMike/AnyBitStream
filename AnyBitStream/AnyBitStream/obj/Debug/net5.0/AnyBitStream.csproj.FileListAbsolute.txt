@@ -1,0 +1,12 @@
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.csprojAssemblyReference.cache
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.GeneratedMSBuildEditorConfig.editorconfig
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.AssemblyInfoInputs.cache
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.AssemblyInfo.cs
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.csproj.CoreCompileInputs.cache
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\bin\Debug\net5.0\AnyBitStream.deps.json
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\bin\Debug\net5.0\AnyBitStream.dll
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\bin\Debug\net5.0\ref\AnyBitStream.dll
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\bin\Debug\net5.0\AnyBitStream.pdb
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.dll
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\ref\AnyBitStream.dll
+b:\gitrepo\personalcode\AnyBitStream\AnyBitStream\AnyBitStream\obj\Debug\net5.0\AnyBitStream.pdb
