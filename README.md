@@ -3,8 +3,7 @@
 [![nuget](https://img.shields.io/nuget/v/AnyBitStream.svg)](https://www.nuget.org/packages/AnyBitStream/)
 [![nuget](https://img.shields.io/nuget/dt/AnyBitStream.svg)](https://www.nuget.org/packages/AnyBitStream/)
 [![Build status](https://ci.appveyor.com/api/projects/status/gfwjabg1pta7em94?svg=true)](https://ci.appveyor.com/project/MichaelBrown/anybitstream)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8001bb10a20c4456a98ed4dde145350a)](https://app.codacy.com/app/replaysMike/AnyBitStream?utm_source=github.com&utm_medium=referral&utm_content=replaysMike/AnyBitStream&utm_campaign=Badge_Grade_Dashboard)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/85f671af543f46a599cafd10dab36e5a)](https://www.codacy.com/app/replaysMike/AnyBitStream?utm_source=github.com&utm_medium=referral&utm_content=replaysMike/AnyBitStream&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/977cab1b5c7e4d7ca749c691c6066a8f)](https://www.codacy.com/gh/replaysMike/AnyBitStream/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=replaysMike/AnyBitStream&amp;utm_campaign=Badge_Grade)
 
 Work with bits efficiently in a stream using standard streams and extending BinaryReader/BinaryWriter.
 
