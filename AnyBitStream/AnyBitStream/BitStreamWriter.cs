@@ -493,11 +493,5 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="bitPosition"></param>
         public void SetBitsPosition(int bitPosition) => BaseStream.SetBitsPosition(bitPosition);
-
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
     }
 }

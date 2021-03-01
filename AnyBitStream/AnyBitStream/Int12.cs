@@ -8,7 +8,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
-    public struct Int12 : ICustomType
+    public struct Int12 : ICustomType, IEquatable<Int12>, IEquatable<UInt12>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -45,6 +45,12 @@ namespace AnyBitStream
             => -((i._sign ? 1 : 0) << (BitSize - 1)) + i._value;
         public static bool operator ==(Int12 val1, Int12 val2) => val1.Equals(val2);
         public static bool operator !=(Int12 val1, Int12 val2) => !(val1.Equals(val2));
+        public static bool operator ==(Int12 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(Int12 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(Int12 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(Int12 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, Int12 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, Int12 val1) => !(val1.Equals(val2));
         public static Int12 operator -(Int12 a, long b) => new Int12(a._value - b);
         public static long operator -(long a, Int12 b) => a - b._value;
         public static Int12 operator +(Int12 a, long b) => new Int12(a._value + b);
@@ -53,9 +59,34 @@ namespace AnyBitStream
         public static long operator *(long a, Int12 b) => a * b._value;
         public static Int12 operator /(Int12 a, long b) => new Int12(a._value / b);
         public static long operator /(long a, Int12 b) => a / b._value;
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is Int12 other)
+                return Equals(other);
+            if (obj is UInt12 other2)
+                return _value == other2._value && !_sign;
+            if (obj is byte b)
+                return _value == b;
+            if (obj is short s)
+                return _value == s;
+            if (obj is int i)
+                return _value == i;
+            if (obj is long l)
+                return _value == l;
+            if (obj is uint ui)
+                return _value == ui;
+            if (obj is ushort us)
+                return _value == us;
+            if (obj is ulong ul)
+                return (ulong)_value == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => _value.ToString();
+        public bool Equals(Int12 other) => _value == other._value && _sign == other._sign;
+        public bool Equals(UInt12 other) => _value == other._value && !_sign;
         public bool Equals(long other) => _value == other;
         public bool Equals(int other) => _value == other;
         public bool Equals(short other) => _value == other;
@@ -67,7 +98,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
-    public struct UInt12 : ICustomType
+    public struct UInt12 : ICustomType, IEquatable<UInt12>, IEquatable<Int12>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -102,6 +133,12 @@ namespace AnyBitStream
             => (ulong)(i._value & 0xFFF);
         public static bool operator ==(UInt12 val1, UInt12 val2) => val1.Equals(val2);
         public static bool operator !=(UInt12 val1, UInt12 val2) => !(val1.Equals(val2));
+        public static bool operator ==(UInt12 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(UInt12 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(UInt12 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(UInt12 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, UInt12 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, UInt12 val1) => !(val1.Equals(val2));
         public static UInt12 operator -(UInt12 a, ulong b) => new UInt12((ulong)a._value - b);
         public static ulong operator -(ulong a, UInt12 b) => a - (ulong)b._value;
         public static UInt12 operator +(UInt12 a, ulong b) => new UInt12((ulong)a._value + b);
@@ -110,9 +147,34 @@ namespace AnyBitStream
         public static ulong operator *(ulong a, UInt12 b) => a * (ulong)b._value;
         public static UInt12 operator /(UInt12 a, ulong b) => new UInt12((ulong)a._value / b);
         public static ulong operator /(ulong a, UInt12 b) => a / (ulong)b._value;
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is UInt2 other)
+                return Equals(other);
+            if (obj is Int2 other2)
+                return _value == other2._value && !other2._sign;
+            if (obj is byte b)
+                return _value == b;
+            if (obj is short s)
+                return _value == s;
+            if (obj is int i)
+                return _value == i;
+            if (obj is long l)
+                return _value == l;
+            if (obj is uint ui)
+                return _value == ui;
+            if (obj is ushort us)
+                return _value == us;
+            if (obj is ulong ul)
+                return (ulong)_value == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => _value.ToString();
+        public bool Equals(UInt12 other) => _value == other._value;
+        public bool Equals(Int12 other) => _value == other._value && !other._sign;
         public bool Equals(long other) => _value == other;
         public bool Equals(int other) => _value == other;
         public bool Equals(short other) => _value == other;

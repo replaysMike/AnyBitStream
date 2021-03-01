@@ -22,9 +22,16 @@ namespace AnyBitStream
         /// Get the bits in a byte
         /// </summary>
         /// <param name="value"></param>
+        /// <returns></returns>
+        public static Bit[] GetBits(this byte value) => GetBits(value, sizeof(byte) * 8);
+
+        /// <summary>
+        /// Get the bits in a byte
+        /// </summary>
+        /// <param name="value"></param>
         /// <param name="bits">The number of bits to get</param>
         /// <returns></returns>
-        public static Bit[] GetBits(this byte value, int bits = sizeof(byte) * 8)
+        public static Bit[] GetBits(this byte value, int bits)
         {
             var bitArray = new Bit[bits];
             for(var i = 0; i < bitArray.Length; i++)
@@ -63,9 +70,16 @@ namespace AnyBitStream
         /// Get the bits in a short
         /// </summary>
         /// <param name="value"></param>
+        /// <returns></returns>
+        public static Bit[] GetBits(this short value) => GetBits(value, sizeof(short) * 8);
+
+        /// <summary>
+        /// Get the bits in a short
+        /// </summary>
+        /// <param name="value"></param>
         /// <param name="bits">The number of bits to get</param>
         /// <returns></returns>
-        public static Bit[] GetBits(this short value, int bits = sizeof(short) * 8)
+        public static Bit[] GetBits(this short value, int bits)
         {
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
@@ -79,9 +93,16 @@ namespace AnyBitStream
         /// Get the bits in a int
         /// </summary>
         /// <param name="value"></param>
+        /// <returns></returns>
+        public static Bit[] GetBits(this int value) => GetBits(value, sizeof(int) * 8);
+
+        /// <summary>
+        /// Get the bits in a int
+        /// </summary>
+        /// <param name="value"></param>
         /// <param name="bits">The number of bits to get</param>
         /// <returns></returns>
-        public static Bit[] GetBits(this int value, int bits = sizeof(int) * 8)
+        public static Bit[] GetBits(this int value, int bits)
         {
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
@@ -95,9 +116,16 @@ namespace AnyBitStream
         /// Get the bits in a long
         /// </summary>
         /// <param name="value"></param>
+        /// <returns></returns>
+        public static Bit[] GetBits(this long value) => GetBits(value, sizeof(long) * 8);
+
+        /// <summary>
+        /// Get the bits in a long
+        /// </summary>
+        /// <param name="value"></param>
         /// <param name="bits">The number of bits to get</param>
         /// <returns></returns>
-        public static Bit[] GetBits(this long value, int bits = sizeof(long) * 8)
+        public static Bit[] GetBits(this long value, int bits)
         {
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
@@ -129,7 +157,7 @@ namespace AnyBitStream
         /// <param name="value"></param>
         /// <param name="bits">The number of bits to shift by, cannot exceed the type's number of bits.</param>
         /// <returns></returns>
-        public static int ShiftBits(this int value, int bits) => bits <= (sizeof(int) * 8) ? (int)(value << bits) : throw new ArgumentOutOfRangeException(nameof(bits), $"Cannot shift value more than {sizeof(int) * 8} bits");
+        public static int ShiftBits(this int value, int bits) => bits <= (sizeof(int) * 8) ? (value << bits) : throw new ArgumentOutOfRangeException(nameof(bits), $"Cannot shift value more than {sizeof(int) * 8} bits");
 
         /// <summary>
         /// Shift a value by a specified number of bits. Remainder bits will be lost
@@ -137,7 +165,7 @@ namespace AnyBitStream
         /// <param name="value"></param>
         /// <param name="bits">The number of bits to shift by, cannot exceed the type's number of bits.</param>
         /// <returns></returns>
-        public static long ShiftBits(this long value, int bits) => bits <= (sizeof(long) * 8) ? (long)(value << bits) : throw new ArgumentOutOfRangeException(nameof(bits), $"Cannot shift value more than {sizeof(long) * 8} bits");
+        public static long ShiftBits(this long value, int bits) => bits <= (sizeof(long) * 8) ? (value << bits) : throw new ArgumentOutOfRangeException(nameof(bits), $"Cannot shift value more than {sizeof(long) * 8} bits");
 
         /// <summary>
         /// Shift a byte array by a specified number of bits
@@ -151,7 +179,7 @@ namespace AnyBitStream
                 throw new ArgumentOutOfRangeException(nameof(bits), $"Cannot shift byte array more than 8 bits");
             var returnBytes = new byte[bytes.Length + 1];
             byte nextBits = 0;
-            byte originalValue = 0;
+            byte originalValue;
             for(var i = 0; i < returnBytes.Length; i++)
             {
                 if (i < bytes.Length)

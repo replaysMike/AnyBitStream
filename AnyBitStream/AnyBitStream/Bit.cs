@@ -56,9 +56,9 @@ namespace AnyBitStream
         public static bool operator !=(Bit bit1, bool bit2) => !(bit1._value == bit2);
         public static bool operator ==(bool bit1, Bit bit2) => bit1.Equals(bit2._value);
         public static bool operator !=(bool bit1, Bit bit2) => !(bit1 == bit2._value);
-        public static bool operator ==(Bit bit1, int bit2) => ((int)(bit1._value ? 1 : 0)).Equals(bit2);
+        public static bool operator ==(Bit bit1, int bit2) => (bit1._value ? 1 : 0).Equals(bit2);
         public static bool operator !=(Bit bit1, int bit2) => !(bit1 == bit2);
-        public static bool operator ==(int bit1, Bit bit2) => bit1.Equals((int)(bit2._value ? 1 : 0));
+        public static bool operator ==(int bit1, Bit bit2) => bit1.Equals(bit2._value ? 1 : 0);
         public static bool operator !=(int bit1, Bit bit2) => !(bit1 == bit2);
         public static bool operator ==(Bit bit1, byte bit2) => ((byte)(bit1._value ? 1 : 0)).Equals(bit2);
         public static bool operator !=(Bit bit1, byte bit2) => !(bit1 == bit2);

@@ -8,7 +8,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = BitSize / 8)]
-    public struct Int48 : ICustomType
+    public struct Int48 : ICustomType, IEquatable<Int48>, IEquatable<UInt48>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -81,15 +81,52 @@ namespace AnyBitStream
             var value = i._value[0] + (i._value[1] << 8) + (i._value[2] << 16) + ((long)i._value[3] << 24) + ((long)i._value[4] << 32) + ((long)i._value[5] << 40);
             return -((i._sign ? 1L : 0L) << 47) + value;
         }
+        public static explicit operator Int48(ulong value) => new Int48((long)value);
+        public static explicit operator ulong(Int48 i)
+        {
+            var value = i._value[0] + (i._value[1] << 8) + (i._value[2] << 16) + ((long)i._value[3] << 24) + ((long)i._value[4] << 32) + ((long)i._value[5] << 40);
+            return (ulong)(-((i._sign ? 1L : 0L) << 47) + value);
+        }
         public static bool operator ==(Int48 val1, Int48 val2) => val1.Equals(val2);
         public static bool operator !=(Int48 val1, Int48 val2) => !(val1.Equals(val2));
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public static bool operator ==(Int48 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(Int48 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(Int48 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(Int48 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, Int48 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, Int48 val1) => !(val1.Equals(val2));
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is Int48 other)
+                return Equals(other);
+            if (obj is UInt48 other2)
+                return _value == other2._value && !_sign;
+            if (obj is byte b)
+                return (long)this == b;
+            if (obj is short s)
+                return (long)this == s;
+            if (obj is int i)
+                return (long)this == i;
+            if (obj is long l)
+                return (long)this == l;
+            if (obj is uint ui)
+                return (long)this == ui;
+            if (obj is ushort us)
+                return (long)this == us;
+            if (obj is ulong ul)
+                return (ulong)this == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => ((long)this).ToString();
+        public bool Equals(Int48 other) => _value == other._value && _sign == other._sign;
+        public bool Equals(UInt48 other) => _value == other._value && !_sign;
         public bool Equals(long other) => (long)this == other;
         public bool Equals(int other) => (int)this == other;
         public bool Equals(short other) => (short)this == other;
-        public bool Equals(byte other) => (byte)this == other;
+        public bool Equals(byte other) => (byte)(long)this == other;
     }
 
     /// <summary>
@@ -97,7 +134,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1)]
-    public struct UInt48 : ICustomType
+    public struct UInt48 : ICustomType, IEquatable<UInt48>, IEquatable<Int48>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -152,9 +189,40 @@ namespace AnyBitStream
             => i._value[0] + ((ulong)i._value[1] << 8) + ((ulong)i._value[2] << 16) + ((ulong)i._value[3] << 24) + ((ulong)i._value[4] << 32) + ((ulong)i._value[5] << 40);
         public static bool operator ==(UInt48 val1, UInt48 val2) => val1.Equals(val2);
         public static bool operator !=(UInt48 val1, UInt48 val2) => !(val1.Equals(val2));
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public static bool operator ==(UInt48 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(UInt48 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(UInt48 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(UInt48 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, UInt48 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, UInt48 val1) => !(val1.Equals(val2));
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is UInt2 other)
+                return Equals(other);
+            if (obj is Int2 other2)
+                return (ulong)this == other2._value && !other2._sign;
+            if (obj is byte b)
+                return (ulong)this == b;
+            if (obj is short s)
+                return (ulong)this == (ushort)s;
+            if (obj is int i)
+                return (ulong)this == (uint)i;
+            if (obj is long l)
+                return (ulong)this == (ulong)l;
+            if (obj is uint ui)
+                return (ulong)this == ui;
+            if (obj is ushort us)
+                return (ulong)this == us;
+            if (obj is ulong ul)
+                return (ulong)this == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => ((ulong)this).ToString();
+        public bool Equals(UInt48 other) => _value == other._value;
+        public bool Equals(Int48 other) => _value == other._value && !other._sign;
         public bool Equals(long other) => (ulong)this == (ulong)other;
         public bool Equals(int other) => (uint)this == (uint)other;
         public bool Equals(short other) => (ushort)this == (ushort)other;

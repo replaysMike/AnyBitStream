@@ -189,7 +189,7 @@ namespace AnyBitStream.Tests
             var bytes = new byte[] { 0, 24, 185 }; // 6300
             var stream = new BitStream(bytes);
             var reader = new BitStreamReader(stream, Encoding.UTF8, true);
-            var val = reader.ReadTe(4, out var bitCount);
+            var val = reader.ReadTe(2, out var bitCount);
             Assert.AreEqual(6300, val);
             Assert.AreEqual(23, bitCount);
         }

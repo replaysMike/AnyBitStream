@@ -593,17 +593,14 @@ namespace AnyBitStream
         /// <param name="max"></param>
         /// <param name="bitCount">The number of bits used to construct the value</param>
         /// <returns></returns>
-        public int ReadTe(int max, out int bitCount)
+        public uint ReadTe(int max, out int bitCount)
         {
             if (max > 1)
-                return ReadSe(out bitCount);
+                return ReadUe(out bitCount);
             bitCount = 1;
             return ~ReadBit() & 0x1;
         }
 
         #endregion
-
-        protected override void Dispose(bool disposing)
-            => base.Dispose(disposing);
     }
 }

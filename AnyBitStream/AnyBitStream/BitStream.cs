@@ -41,7 +41,7 @@ namespace AnyBitStream
         public int BitsPosition => _bitsPosition;
 
         /// <inheritdoc />
-        public BitStream() : base()
+        public BitStream()
         {
         }
 
@@ -1010,7 +1010,7 @@ namespace AnyBitStream
             else if (type == typeof(long) || type == typeof(ulong))
                 return sizeof(long) * 8;
             // this isn't ideal but we can't utilize the interface without an instance
-            else if (type == typeof(Bit) || type == typeof(Bit))
+            else if (type == typeof(Bit))
                 return Bit.BitSize;
             else if (type == typeof(Int2) || type == typeof(UInt2))
                 return Int2.BitSize;

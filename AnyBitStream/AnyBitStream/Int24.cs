@@ -8,7 +8,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = sizeof(int))]
-    public struct Int24 : ICustomType
+    public struct Int24 : ICustomType, IEquatable<Int24>, IEquatable<UInt24>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -68,6 +68,12 @@ namespace AnyBitStream
             => -((i._sign ? 1 : 0) << (BitSize - 1)) + i._value;
         public static bool operator ==(Int24 val1, Int24 val2) => val1.Equals(val2);
         public static bool operator !=(Int24 val1, Int24 val2) => !(val1.Equals(val2));
+        public static bool operator ==(Int24 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(Int24 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(Int24 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(Int24 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, Int24 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, Int24 val1) => !(val1.Equals(val2));
         public static Int24 operator -(Int24 a, long b) => new Int24((long)a._value - b);
         public static long operator -(long a, Int24 b) => a - b._value;
         public static Int24 operator +(Int24 a, long b) => new Int24((long)a._value + b);
@@ -76,9 +82,34 @@ namespace AnyBitStream
         public static long operator *(long a, Int24 b) => a * b._value;
         public static Int24 operator /(Int24 a, long b) => new Int24((long)a._value / b);
         public static long operator /(long a, Int24 b) => a / b._value;
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is Int24 other)
+                return Equals(other);
+            if (obj is UInt24 other2)
+                return _value == other2._value && !_sign;
+            if (obj is byte b)
+                return _value == b;
+            if (obj is short s)
+                return _value == s;
+            if (obj is int i)
+                return _value == i;
+            if (obj is long l)
+                return _value == l;
+            if (obj is uint ui)
+                return _value == ui;
+            if (obj is ushort us)
+                return _value == us;
+            if (obj is ulong ul)
+                return (ulong)_value == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => _value.ToString();
+        public bool Equals(Int24 other) => _value == other._value && _sign == other._sign;
+        public bool Equals(UInt24 other) => _value == other._value && !_sign;
         public bool Equals(long other) => _value == other;
         public bool Equals(int other) => _value == other;
         public bool Equals(short other) => _value == other;
@@ -90,7 +121,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = sizeof(int))]
-    public struct UInt24 : ICustomType
+    public struct UInt24 : ICustomType, IEquatable<UInt24>, IEquatable<Int24>
     {
         /// <summary>
         /// The number of bits occupied by the type
@@ -145,6 +176,12 @@ namespace AnyBitStream
             => (ulong)(i._value & 0xFFFFFF);
         public static bool operator ==(UInt24 val1, UInt24 val2) => val1.Equals(val2);
         public static bool operator !=(UInt24 val1, UInt24 val2) => !(val1.Equals(val2));
+        public static bool operator ==(UInt24 val1, object val2) => val1.Equals(val2);
+        public static bool operator !=(UInt24 val1, object val2) => !(val1.Equals(val2));
+        public static bool operator ==(UInt24 val1, long val2) => val1.Equals(val2);
+        public static bool operator !=(UInt24 val1, long val2) => !(val1.Equals(val2));
+        public static bool operator ==(long val2, UInt24 val1) => val1.Equals(val2);
+        public static bool operator !=(long val2, UInt24 val1) => !(val1.Equals(val2));
         public static UInt24 operator -(UInt24 a, ulong b) => new UInt24((ulong)a._value - b);
         public static ulong operator -(ulong a, UInt24 b) => a - (ulong)b._value;
         public static UInt24 operator +(UInt24 a, ulong b) => new UInt24((ulong)a._value + b);
@@ -153,9 +190,34 @@ namespace AnyBitStream
         public static ulong operator *(ulong a, UInt24 b) => a * (ulong)b._value;
         public static UInt24 operator /(UInt24 a, ulong b) => new UInt24((ulong)a._value / b);
         public static ulong operator /(ulong a, UInt24 b) => a / (ulong)b._value;
-        public override bool Equals(object obj) => _value.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (obj is UInt24 other)
+                return Equals(other);
+            if (obj is Int24 other2)
+                return _value == other2._value && !other2._sign;
+            if (obj is byte b)
+                return _value == b;
+            if (obj is short s)
+                return _value == s;
+            if (obj is int i)
+                return _value == i;
+            if (obj is long l)
+                return _value == l;
+            if (obj is uint ui)
+                return _value == ui;
+            if (obj is ushort us)
+                return _value == us;
+            if (obj is ulong ul)
+                return (ulong)_value == ul;
+            return false;
+        }
         public override int GetHashCode() => _value.GetHashCode();
         public override string ToString() => _value.ToString();
+        public bool Equals(UInt24 other) => _value == other._value;
+        public bool Equals(Int24 other) => _value == other._value && !other._sign;
         public bool Equals(long other) => _value == other;
         public bool Equals(int other) => _value == other;
         public bool Equals(short other) => _value == other;

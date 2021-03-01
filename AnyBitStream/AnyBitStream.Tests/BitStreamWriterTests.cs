@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.IO;
 using System.Text;
 
 namespace AnyBitStream.Tests
@@ -198,9 +199,9 @@ namespace AnyBitStream.Tests
             var val = 6300U;
             var bitsWritten = writer.WriteUe(val);
             writer.Flush();
-            Assert.AreEqual(23, bitsWritten);
+            Assert.AreEqual(24, bitsWritten);
             var bytes = stream.ToArray();
-            Assert.AreEqual(new byte[] { 0, 24, 57 }, bytes);
+            Assert.AreEqual(new byte[] { 0, 24, 185 }, bytes);
         }
 
         [Test]
@@ -221,10 +222,10 @@ namespace AnyBitStream.Tests
             var stream = new BitStream();
             var writer = new BitStreamWriter(stream, Encoding.UTF8, true);
             var val = 6300U;
-            writer.WriteTe(val, 30000);
-            Assert.AreEqual(sizeof(int), stream.Length);
+           var bitsWritten = writer.WriteTe(val, 30000);
+            Assert.AreEqual(24, bitsWritten);
             var bytes = stream.ToArray();
-            Assert.AreEqual(new byte[] { 0, 24, 57 }, bytes);
+            Assert.AreEqual(new byte[] { 0, 24, 185 }, bytes);
         }
     }
 }
