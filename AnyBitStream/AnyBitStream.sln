@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{08EDA596-DA62-47B8-955B-6D51D5481DBC}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		C:\Users\mikeb\Downloads\any.ico = C:\Users\mikeb\Downloads\any.ico
 	EndProjectSection
 EndProject
 Global
