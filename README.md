@@ -9,7 +9,7 @@ Work with bits efficiently in a stream using standard streams and extending Bina
 
 ## Description
 
-AnyBitStream is an efficient stream based class for working with data at the bit level. It supports non-standard numeric types such as Int2-Int7, Int12/24/48 and is perfect for network protocols.
+AnyBitStream is an efficient stream based class for working with data at the bit level. It supports non-standard numeric types such as `Int2` to `Int10`, `Int12,Int24,Int48` and is perfect for working with network protocols (`Exp-Golomb` encoded integers) or general bit-packing operations.
 
 ## Installation
 Install AnyBitStream from the Package Manager Console:
