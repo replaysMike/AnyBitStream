@@ -39,12 +39,11 @@ var data = reader.ReadBytes(header.Length);
 
 ### Unaligned vs Aligned bytes
 
-By default, the `BitStream` will not allow unaligned data to be read. For example, if you've read 5 bits and then try to read a byte an exception will be thrown. Because you tried to read a byte 
-that doesn't reside on a byte boundary (8 bits) it doesn't want to give you potentially bad data. However sometimes this behavior is desired with certain bit packing formats. 
+By default, the `BitStream` will not allow unaligned data to be read/written. For example, if you've read 5 bits and then try to read a byte an exception will be thrown. Because you tried to read a byte that doesn't reside on a byte boundary (8 bits) it doesn't want to give you potentially bad data. However sometimes this behavior is desired with certain bit packing formats. 
 
-To enable reading unaligned:
+To enable reading/writing unaligned data:
 ```csharp
-// via constructor(s)
+// via constructor(s) on the stream
 var stream = new BitStream(true);
 var stream = new BitStream(buffer, writable: true, allowUnalignedOperations: true);
 // via property
