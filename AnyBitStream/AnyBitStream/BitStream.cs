@@ -49,7 +49,7 @@ namespace AnyBitStream
         /// Initializes a new instance of the <see cref="BitStream"/> class with an expandable capacity initialized to zero.
         /// </summary>
         /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
-        public BitStream(bool allowUnalignedOperations) : base()
+        public BitStream(bool allowUnalignedOperations)
         {
             AllowUnalignedOperations = allowUnalignedOperations;
         }
@@ -883,7 +883,6 @@ namespace AnyBitStream
         internal T ReadCustomInternal<T>()
             where T : ICustomType
         {
-            var v = (Int2)1L;
             if (typeof(T) == typeof(Int2))
                 return (T)(object)(Int2)ReadBitsInternal(Int2.BitSize);
             else if (typeof(T) == typeof(UInt2))
@@ -999,7 +998,7 @@ namespace AnyBitStream
         private int BitsSizeOf<T>()
         {
             var type = typeof(T);
-            if (type == typeof(bool) || type == typeof(bool))
+            if (type == typeof(bool))
                 return sizeof(bool);
             if (type == typeof(byte) || type == typeof(sbyte))
                 return sizeof(byte) * 8;

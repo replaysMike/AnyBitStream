@@ -12,7 +12,7 @@ namespace AnyBitStream
     {
         public const int BitSize = 1;
 
-        private bool _value;
+        private readonly bool _value;
 
         public Bit(bool value)
         {
