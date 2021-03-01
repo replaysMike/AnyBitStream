@@ -189,5 +189,42 @@ namespace AnyBitStream.Tests
             var byteBits = bytes.GetBits(Int48.BitSize);
             CollectionAssert.AreEqual(valBits, byteBits);
         }
+
+        [Test]
+        public void Should_WriteUe()
+        {
+            var stream = new BitStream();
+            var writer = new BitStreamWriter(stream, Encoding.UTF8, true);
+            var val = 6300U;
+            var bitsWritten = writer.WriteUe(val);
+            writer.Flush();
+            Assert.AreEqual(23, bitsWritten);
+            var bytes = stream.ToArray();
+            Assert.AreEqual(new byte[] { 0, 24, 57 }, bytes);
+        }
+
+        [Test]
+        public void Should_WriteSe()
+        {
+            var stream = new BitStream();
+            var writer = new BitStreamWriter(stream, Encoding.UTF8, true);
+            var val = -6300;
+            var bitsWritten = writer.WriteSe(val);
+            Assert.AreEqual(26, bitsWritten);
+            var bytes = stream.ToArray();
+            Assert.AreEqual(new byte[] { 0, 48, 114, 2 }, bytes);
+        }
+
+        [Test]
+        public void Should_WriteTe()
+        {
+            var stream = new BitStream();
+            var writer = new BitStreamWriter(stream, Encoding.UTF8, true);
+            var val = 6300U;
+            writer.WriteTe(val, 30000);
+            Assert.AreEqual(sizeof(int), stream.Length);
+            var bytes = stream.ToArray();
+            Assert.AreEqual(new byte[] { 0, 24, 57 }, bytes);
+        }
     }
 }

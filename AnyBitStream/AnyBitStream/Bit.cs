@@ -8,7 +8,7 @@ namespace AnyBitStream
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1)]
-    public struct Bit : IEquatable<Bit>, IEquatable<long>, IEquatable<int>, IEquatable<byte>, IEquatable<short>
+    public struct Bit : IEquatable<Bit>, IEquatable<long>, IEquatable<int>, IEquatable<byte>, IEquatable<short>, IEquatable<bool>
     {
         public const int BitSize = 1;
 
@@ -52,13 +52,17 @@ namespace AnyBitStream
 
         public static bool operator ==(Bit bit1, Bit bit2) => bit1._value.Equals(bit2._value);
         public static bool operator !=(Bit bit1, Bit bit2) => !(bit1 == bit2);
-        public static bool operator ==(Bit bit1, int bit2) => bit1._value.Equals(bit2);
+        public static bool operator ==(Bit bit1, bool bit2) => bit1._value.Equals(bit2);
+        public static bool operator !=(Bit bit1, bool bit2) => !(bit1._value == bit2);
+        public static bool operator ==(bool bit1, Bit bit2) => bit1.Equals(bit2._value);
+        public static bool operator !=(bool bit1, Bit bit2) => !(bit1 == bit2._value);
+        public static bool operator ==(Bit bit1, int bit2) => ((int)(bit1._value ? 1 : 0)).Equals(bit2);
         public static bool operator !=(Bit bit1, int bit2) => !(bit1 == bit2);
-        public static bool operator ==(int bit1, Bit bit2) => bit1.Equals(bit2._value);
+        public static bool operator ==(int bit1, Bit bit2) => bit1.Equals((int)(bit2._value ? 1 : 0));
         public static bool operator !=(int bit1, Bit bit2) => !(bit1 == bit2);
-        public static bool operator ==(Bit bit1, byte bit2) => bit1._value.Equals(bit2);
+        public static bool operator ==(Bit bit1, byte bit2) => ((byte)(bit1._value ? 1 : 0)).Equals(bit2);
         public static bool operator !=(Bit bit1, byte bit2) => !(bit1 == bit2);
-        public static bool operator ==(byte bit1, Bit bit2) => bit1.Equals(bit2._value);
+        public static bool operator ==(byte bit1, Bit bit2) => bit1.Equals((byte)(bit2._value ? 1 : 0));
         public static bool operator !=(byte bit1, Bit bit2) => !(bit1 == bit2);
         public static bool operator >(Bit bit1, Bit bit2) => (bit1._value ? 1 : 0) > (bit2._value ? 1 : 0);
         public static bool operator <(Bit bit1, Bit bit2) => (bit1._value ? 1 : 0) < (bit2._value ? 1 : 0);
@@ -74,7 +78,21 @@ namespace AnyBitStream
         public static Bit operator ~(Bit bit) => ~((bit._value ? 1 : 0) & 1);
 
 
-        public override bool Equals(object obj) => obj is Bit bit && Equals(bit);
+        public override bool Equals(object obj)
+        {
+            if(obj is Bit bit) return Equals(bit);
+            if (obj is long l)
+                return Equals(l);
+            if (obj is int i)
+                return Equals(i);
+            if (obj is short s)
+                return Equals(s);
+            if (obj is byte b)
+                return Equals(b);
+            if (obj is bool bl)
+                return Equals(bl);
+            return false;
+        }
 
         public override int GetHashCode() => _value ? 1 : 0;
 
@@ -89,5 +107,6 @@ namespace AnyBitStream
         public bool Equals(short other) => (_value ? 1 : 0).Equals(other);
 
         public bool Equals(byte other) => (_value ? 1 : 0).Equals(other);
+        public bool Equals(bool other) => _value.Equals(other);
     }
 }

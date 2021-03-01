@@ -35,6 +35,11 @@ namespace AnyBitStream
         /// </summary>
         public bool IsUnaligned => _bitsPosition % 8 > 0;
 
+        /// <summary>
+        /// Get the bits position of the stream
+        /// </summary>
+        public int BitsPosition => _bitsPosition;
+
         /// <inheritdoc />
         public BitStream() : base()
         {
@@ -216,6 +221,13 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bits"></param>
+        public void WriteBits(long value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
         public void WriteBits(int value, int bits) => WriteBitsInternal(value, bits);
 
         /// <summary>
@@ -223,7 +235,42 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bits"></param>
+        public void WriteBits(short value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
         public void WriteBits(byte value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(ulong value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(uint value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(ushort value, int bits) => WriteBitsInternal(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(sbyte value, int bits) => WriteBitsInternal(value, bits);
 
         /// <summary>
         /// Write a sequence of bits
@@ -574,6 +621,19 @@ namespace AnyBitStream
             }
         }
 
+        internal void WriteBitsInternal(ulong value, int bits)
+        {
+            for (byte i = 0; i < bits; i++)
+            {
+                var bit = (value >> i) & 0x1;
+                var bitValue = (byte)(bit << (_bitsPosition % 8));
+                _pendingByteValue += bitValue;
+                _bitsPosition++;
+                _hasPendingWrites = true;
+                FlushOnByteBoundary();
+            }
+        }
+
         internal void WriteBitsInternal(IEnumerable<Bit> bits)
         {
             var i = 0;
@@ -865,6 +925,36 @@ namespace AnyBitStream
             else if (typeof(T) == typeof(UInt48))
                 return (T)(object)(UInt48)ReadUBitsInternal(UInt48.BitSize);
             throw new NotSupportedException($"Type '{typeof(T).Name}' is not supported!");
+        }
+
+        /// <summary>
+        /// Skip a specified number of bytes
+        /// </summary>
+        /// <param name="count"></param>
+        public void SkipBytes(int count)
+        {
+            if (_bitsPosition == 0)
+                base.Position += count;
+            else
+                _bitsPosition += count * 8;
+        }
+
+        /// <summary>
+        /// Skip a specified number of bits
+        /// </summary>
+        /// <param name="bits"></param>
+        public void SkipBits(int bits)
+        {
+            _bitsPosition += bits;
+        }
+
+        /// <summary>
+        /// Set the bits position of the stream
+        /// </summary>
+        /// <param name="bitsPosition"></param>
+        public void SetBitsPosition(int bitsPosition)
+        {
+            _bitsPosition = bitsPosition;
         }
 
         /// <summary>

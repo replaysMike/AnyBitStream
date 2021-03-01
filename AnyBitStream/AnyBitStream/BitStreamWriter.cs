@@ -236,6 +236,13 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bits"></param>
+        public void WriteBits(long value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
         public void WriteBits(int value, int bits) => BaseStream.WriteBits(value, bits);
 
         /// <summary>
@@ -243,7 +250,42 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bits"></param>
+        public void WriteBits(short value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
         public void WriteBits(byte value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(ulong value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(uint value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(ushort value, int bits) => BaseStream.WriteBits(value, bits);
+
+        /// <summary>
+        /// Write a value using a specified number of bits
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bits"></param>
+        public void WriteBits(sbyte value, int bits) => BaseStream.WriteBits(value, bits);
 
         /// <summary>
         /// Write a 2 bit integer
@@ -365,13 +407,93 @@ namespace AnyBitStream
         /// <param name="value"></param>
         public void Write(UInt48 value) => BaseStream.Write(value);
 
+        /// <summary>
+        /// Write unsigned integer as Exponential Golomb coded syntax element with the left bit first
+        /// </summary>
+        /// <returns>The number of bits written</returns>
+        public int WriteUe(uint value)
+        {
+            var result = 0U;
+            value = value + 1;
+            var bitCount = MathUtilities.GetRequiredBits(value);
+            while (value > 0)
+            {
+                result <<= 1;
+                result |= value & 0x1;
+                value >>= 1;
+            }
+
+            result <<= bitCount - 1;
+            bitCount <<= 1;
+            WriteBits(result, bitCount);
+            return bitCount;
+        }
+
+        /// <summary>
+        /// Write signed integer (32 bits) Exp-Golomb-coded syntax element with the left bit first
+        /// </summary>
+        /// <returns>The number of bits written</returns>
+        public int WriteSe(int value)
+        {
+            var result = 0;
+            value = (value == 0 ? 1 : (MathUtilities.Abs(value) << 1) | ((value >> 15) & 0x1));
+            var bitCount = MathUtilities.GetRequiredBits((uint)value);
+            while (value > 0)
+            {
+                result <<= 1;
+                result |=value & 0x1;
+                value >>= 1;
+            }
+
+            result <<= bitCount - 1;
+            bitCount <<= 1;
+            WriteBits(result, bitCount);
+            return bitCount;
+        }
+
+        /// <summary>
+        /// Write unsigned integer Exp-Golomb-coded syntax element with the left bit first
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="max"></param>
+        /// <returns>The number of bits written</returns>
+        public int WriteTe(uint value, int max)
+        {
+            if (max > 1)
+                return WriteUe(value);
+            WriteBit(~value & 0x1);
+            return 1;
+        }
+
         #endregion
 
-        /*public override void Flush()
-        {
-            BaseStream.FlushIfUnaligned();
-            base.Flush();
-        }*/
+        /// <summary>
+        /// Skip a specified number of bytes
+        /// </summary>
+        public void SkipBytes(int count) => BaseStream.SkipBytes(count);
+
+        /// <summary>
+        /// Skip a single byte
+        /// </summary>
+        public void SkipByte() => SkipBytes(1);
+
+        /// <summary>
+        /// Skip a specified number of bits
+        /// </summary>
+        /// <param name="bitCount">The number of bits to skip</param>
+        public void SkipBits(int bits) => BaseStream.SkipBits(bits);
+
+        /// <summary>
+        /// Skip a single bit
+        /// </summary>
+        public void SkipBit() => SkipBits(1);
+
+        /// <summary>
+        /// Set the bits position of the stream
+        /// </summary>
+        /// <param name="bitPosition"></param>
+        public void SetBitsPosition(int bitPosition) => BaseStream.SetBitsPosition(bitPosition);
+
 
         protected override void Dispose(bool disposing)
         {

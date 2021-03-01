@@ -266,9 +266,9 @@ namespace AnyBitStream
             return Encoding.Default.GetString(buffer);
         }
 
-#endregion
+        #endregion
 
-#region Read types methods
+        #region Read types methods
 
         /// <summary>
         /// Read a single bit
@@ -420,11 +420,190 @@ namespace AnyBitStream
         /// <returns></returns>
         public UInt48 ReadUInt48() => BaseStream.ReadCustomInternal<UInt48>();
 
-#endregion
+        /// <summary>
+        /// Peek a single bit from the stream without moving the stream pointer
+        /// </summary>
+        /// <param name="bits">The number of bits to read</param>
+        /// <returns></returns>
+        public Bit PeekBit()
+        {
+            var startBitPosition = BaseStream._bitsPosition;
+            try
+            {
+                return ReadBit();
+            }
+            finally
+            {
+                BaseStream._bitsPosition = startBitPosition;
+            }
+        }
+
+        /// <summary>
+        /// Peek a specified number of bits from the stream without moving the stream pointer
+        /// </summary>
+        /// <param name="bits">The number of bits to read</param>
+        /// <returns></returns>
+        public long PeekBits(int bits)
+        {
+            var startBitPosition = BaseStream._bitsPosition;
+            try
+            {
+                return ReadBits(bits);
+            }
+            finally
+            {
+                BaseStream._bitsPosition = startBitPosition;
+            }
+        }
+
+        /// <summary>
+        /// Peek a specified number of bits from the stream without moving the stream pointer
+        /// </summary>
+        /// <param name="bits">The number of bits to read</param>
+        /// <returns></returns>
+        public T PeekBits<T>(int bits)
+            where T : struct
+        {
+            var startBitPosition = BaseStream._bitsPosition;
+            try
+            {
+                return ReadBits<T>(bits);
+            }
+            finally
+            {
+                BaseStream._bitsPosition = startBitPosition;
+            }
+        }
+
+        /// <summary>
+        /// Peek a number of bytes without moving the stream pointer
+        /// </summary>
+        /// <param name="count">The number of bytes to read</param>
+        /// <returns></returns>
+        public byte[] PeekBytes(int count)
+        {
+            var startBitPosition = BaseStream._bitsPosition;
+            try
+            {
+                return ReadBytes(count);
+            }
+            finally
+            {
+                BaseStream._bitsPosition = startBitPosition;
+            }
+        }
+
+        /// <summary>
+        /// Skip a specified number of bytes
+        /// </summary>
+        public void SkipBytes(int count) => BaseStream.SkipBytes(count);
+
+        /// <summary>
+        /// Skip a single byte
+        /// </summary>
+        public void SkipByte() => SkipBytes(1);
+
+        /// <summary>
+        /// Skip a specified number of bits
+        /// </summary>
+        /// <param name="bitCount">The number of bits to skip</param>
+        public void SkipBits(int bits) => BaseStream.SkipBits(bits);
+
+        /// <summary>
+        /// Skip a single bit
+        /// </summary>
+        public void SkipBit() => SkipBits(1);
+
+        /// <summary>
+        /// Set the bits position of the stream
+        /// </summary>
+        /// <param name="bitPosition"></param>
+        public void SetBitsPosition(int bitPosition) => BaseStream.SetBitsPosition(bitPosition);
+
+        /// <summary>
+        /// Read unsigned integer (32 bits) Exponential Golomb coded syntax element with the left bit first.
+        /// </summary>
+        /// <param name="bitCount">The number of bits used to construct the value</param>
+        /// <returns></returns>
+        public uint ReadUe(out int bitCount)
+        {
+            var result = 0U;
+            byte zeroCount = 0;
+            var input = ReadUInt32();
+            while((input & 0x1) == 0)
+            {
+                zeroCount++;
+                input >>= 1;
+            }
+
+            var valueBitCount = (byte)(zeroCount + 1);
+            for (byte i = 0; i <= valueBitCount; i++)
+            {
+                result <<= 1;
+                result |= input & 0x1;
+                input >>= 1;
+            }
+            result -= 1;
+            bitCount = valueBitCount + zeroCount;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Read signed integer (32 bits) Exponential Golomb coded syntax element with the left bit first
+        /// </summary>
+        /// <param name="bitCount">The number of bits used to construct the value</param>
+        /// <returns></returns>
+        public int ReadSe(out int bitCount)
+        {
+            var result = 0;
+            byte zeroCount = 0;
+            byte valueBitCount;
+            var input = ReadInt32();
+            while ((input & 0x1) == 0)
+            {
+                zeroCount++;
+                input >>= 1;
+            }
+
+            valueBitCount = (byte)(zeroCount + 1);
+            for (byte i = 0; i <= valueBitCount; i++)
+            {
+                result <<= 1;
+                result |= input & 0x1;
+                input >>= 1;
+            }
+
+            // remove the sign bit
+            var sign = 1 - 2 * (result & 0x1);
+            result = sign * ((result >> 1) & 0x7FFF);
+
+            valueBitCount += zeroCount;
+            if (valueBitCount > 0x20)
+                result |= 0x8000;
+
+            bitCount = valueBitCount + 1;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Read truncated integer Exponential Golomb coded syntax element with the left bit first
+        /// </summary>
+        /// <param name="max"></param>
+        /// <param name="bitCount">The number of bits used to construct the value</param>
+        /// <returns></returns>
+        public int ReadTe(int max, out int bitCount)
+        {
+            if (max > 1)
+                return ReadSe(out bitCount);
+            bitCount = 1;
+            return ~ReadBit() & 0x1;
+        }
+
+        #endregion
 
         protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
+            => base.Dispose(disposing);
     }
 }
