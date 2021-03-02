@@ -103,6 +103,15 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="leaveOpen">True to leave the stream open when disposed</param>
+        public BitStreamWriter(BitStream stream, bool leaveOpen) : base(stream, _defaultEncoding, leaveOpen)
+        {
+        }
+
+        /// <summary>
+        /// Write bits to a stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="leaveOpen">True to leave the stream open when disposed</param>
         /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
         public BitStreamWriter(BitStream stream, bool leaveOpen, bool allowUnalignedOperations) : base(stream, _defaultEncoding, leaveOpen)
         {
