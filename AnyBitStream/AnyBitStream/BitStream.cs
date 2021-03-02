@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +15,6 @@ namespace AnyBitStream
     public class BitStream : MemoryStream
     {
         private const bool DefaultAllowUnalignedOperations = false;
-
         /// <summary>
         /// The current bit position
         /// </summary>
@@ -22,6 +22,40 @@ namespace AnyBitStream
         // the byte that contains partial bit values for unwritten bits, if _bitsPostition > 0
         private byte _pendingByteValue;
         private bool _hasPendingWrites;
+
+
+        #region StreamPointer support
+
+        // below is the implementation for referencing an underlying stream.
+        // we utilize reflection to update the stream pointer when data is modified, so
+        // no copying of the underlying stream is required.
+        private readonly Stream _streamPointer;
+        private static readonly Type _type = typeof(MemoryStream);
+        private static readonly FieldInfo _bufferField;
+        private static readonly FieldInfo _originField;
+        private static readonly FieldInfo _positionField;
+        private static readonly FieldInfo _lengthField;
+        private static readonly FieldInfo _capacityField;
+        private static readonly FieldInfo _expandableField;
+        private static readonly FieldInfo _writableField;
+        private static readonly FieldInfo _exposableField;
+        private static readonly FieldInfo _isOpenField;
+
+        static BitStream()
+        {
+            _type = typeof(MemoryStream);
+            _bufferField = _type.GetField("_buffer", BindingFlags.NonPublic | BindingFlags.Instance);
+            _originField = _type.GetField("_origin", BindingFlags.NonPublic | BindingFlags.Instance);
+            _positionField = _type.GetField("_position", BindingFlags.NonPublic | BindingFlags.Instance);
+            _lengthField = _type.GetField("_length", BindingFlags.NonPublic | BindingFlags.Instance);
+            _capacityField = _type.GetField("_capacity", BindingFlags.NonPublic | BindingFlags.Instance);
+            _expandableField = _type.GetField("_expandable", BindingFlags.NonPublic | BindingFlags.Instance);
+            _writableField = _type.GetField("_writable", BindingFlags.NonPublic | BindingFlags.Instance);
+            _exposableField = _type.GetField("_exposable", BindingFlags.NonPublic | BindingFlags.Instance);
+            _isOpenField = _type.GetField("_isOpen", BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+
+        #endregion
 
         /// <summary>
         /// Get/set if unaligned reads/writes are allowed.
@@ -41,8 +75,72 @@ namespace AnyBitStream
         public int BitsPosition => _bitsPosition;
 
         /// <inheritdoc />
+        public override long Position
+        {
+            get {
+                if (_streamPointer != null)
+                    return _streamPointer.Position;
+                return base.Position;
+            }
+            set {
+                if (_streamPointer != null)
+                    _streamPointer.Position = value;
+                base.Position = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public override long Length
+        {
+            get {
+                if (_streamPointer != null)
+                    return _streamPointer.Length;
+                return base.Length;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void SetLength(long value)
+        {
+            if (_streamPointer != null)
+            {
+                _streamPointer.SetLength(value);
+            }
+            base.SetLength(value);
+        }
+
+        /// <inheritdoc />
         public BitStream()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitStream"/> from an existing <see cref="Stream"/>.
+        /// No copying of the stream is performed, the underlying stream will be referenced.
+        /// </summary>
+        /// <param name="stream"></param>
+        public BitStream(Stream stream) : this(stream as MemoryStream)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitStream"/> from an existing <see cref="MemoryStream"/>.
+        /// No copying of the stream is performed, the underlying stream will be referenced.
+        /// </summary>
+        /// <param name="memoryStream"></param>
+        /// <exception cref="NotSupportedException"></exception>
+        public BitStream(MemoryStream memoryStream)
+        {
+            if (memoryStream != null)
+            {
+                // re-initialize the current stream from an existing stream
+                _streamPointer = memoryStream;
+                InitializeStreamPointer(memoryStream);
+            }
+            else
+            {
+                throw new NotSupportedException($"Only MemoryStream streams are supported!");
+            }
         }
 
         /// <summary>
@@ -343,7 +441,9 @@ namespace AnyBitStream
             {
                 return ReadUnaligned(buffer, offset, count);
             }
-            return base.Read(buffer, offset, count);
+            var val = base.Read(buffer, offset, count);
+            UpdateReadStreamPointer();
+            return val;
         }
 
 #if NET5_0
@@ -353,7 +453,9 @@ namespace AnyBitStream
             {
                 return ReadUnaligned(destination);
             }
-            return base.Read(destination);
+            var val = base.Read(destination);
+            UpdateReadStreamPointer();
+            return val;
         }
 
         public int Read(Span<char> destination)
@@ -365,13 +467,12 @@ namespace AnyBitStream
         {
             throw new NotSupportedException();
         }
-        
+
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             throw new NotSupportedException();
         }
 #endif
-
 
         public override int ReadByte()
         {
@@ -379,7 +480,9 @@ namespace AnyBitStream
             {
                 return (int)ReadUnaligned(BitsSizeOf<byte>());
             }
-            return base.ReadByte();
+            var val = base.ReadByte();
+            UpdateReadStreamPointer();
+            return val;
         }
 
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
@@ -399,7 +502,10 @@ namespace AnyBitStream
                 WriteUnaligned(value, BitsSizeOf<byte>());
             }
             else
+            {
                 base.WriteByte(value);
+                UpdateWriteStreamPointer();
+            }
         }
 
         /// <inheritdoc />
@@ -410,13 +516,13 @@ namespace AnyBitStream
                 WriteUnaligned(buffer, offset, count);
             }
             else
+            {
                 base.Write(buffer, offset, count);
+                UpdateWriteStreamPointer();
+            }
         }
 
-        public void Write(char[] buffer, int offset, int count)
-        {
-            WriteUnaligned(buffer, offset, count);
-        }
+        public void Write(char[] buffer, int offset, int count) => WriteUnaligned(buffer, offset, count);
 
 #if NET5_0
         /// <inheritdoc />
@@ -427,33 +533,38 @@ namespace AnyBitStream
                 WriteUnaligned(source);
             }
             else
+            {
                 base.Write(source);
+                UpdateWriteStreamPointer();
+            }
         }
 
         public void Write(ReadOnlySpan<char> chars)
         {
             WriteUnaligned(chars);
         }
-        
+
 
         /// <inheritdoc />
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken = default)
+        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken = default)
         {
             if (IsUnaligned)
             {
-                WriteUnalignedAsync(source, cancellationToken);
+                await WriteUnalignedAsync(source, cancellationToken);
             }
-            return base.WriteAsync(source, cancellationToken);
+            await base.WriteAsync(source, cancellationToken);
+            UpdateWriteStreamPointer();
         }
 
         /// <inheritdoc />
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (IsUnaligned)
             {
-                WriteUnalignedAsync(buffer, 0, count, cancellationToken);
+                await WriteUnalignedAsync(buffer, 0, count, cancellationToken);
             }
-            return base.WriteAsync(buffer, offset, count, cancellationToken);
+            await base.WriteAsync(buffer, offset, count, cancellationToken);
+            UpdateWriteStreamPointer();
         }
 
         /// <inheritdoc />
@@ -461,14 +572,17 @@ namespace AnyBitStream
         {
             if (_bitsPosition > 0 && _hasPendingWrites)
                 ForceFlush();
-            return base.TryGetBuffer(out buffer);
+            var result = base.TryGetBuffer(out buffer);
+            UpdateWriteStreamPointer();
+            return result;
         }
 
         /// <inheritdoc />
-        public override Task FlushAsync(CancellationToken cancellationToken)
+        public override async Task FlushAsync(CancellationToken cancellationToken)
         {
             FlushIfUnaligned();
-            return base.FlushAsync(cancellationToken);
+            await base.FlushAsync(cancellationToken);
+            UpdateWriteStreamPointer();
         }
 #endif
 
@@ -479,7 +593,11 @@ namespace AnyBitStream
             {
                 WriteUnalignedAsync(buffer, 0, count, new CancellationTokenSource().Token);
             }
-            return base.BeginWrite(buffer, offset, count, callback, state);
+            var result = base.BeginWrite(buffer, offset, count, (ar) => {
+                callback.Invoke(ar);
+                UpdateWriteStreamPointer();
+            }, state);
+            return result;
         }
 
         /// <inheritdoc />
@@ -490,14 +608,12 @@ namespace AnyBitStream
                 FlushIfUnaligned();
             }
             base.WriteTo(stream);
+            UpdateWriteStreamPointer();
         }
 
         #endregion
 
         #region Overrides
-
-
-        
 
         /// <inheritdoc />
         public override byte[] ToArray()
@@ -729,6 +845,7 @@ namespace AnyBitStream
                 returnValue[i] = bit;
                 _bitsPosition++;
             }
+            UpdateReadStreamPointer();
             return returnValue;
         }
 
@@ -749,6 +866,7 @@ namespace AnyBitStream
                 returnValue += bitValue;
                 _bitsPosition++;
             }
+            UpdateReadStreamPointer();
             return returnValue;
         }
 
@@ -769,6 +887,7 @@ namespace AnyBitStream
                 returnValue += bitValue;
                 _bitsPosition++;
             }
+            UpdateReadStreamPointer();
             return returnValue;
         }
 
@@ -800,6 +919,7 @@ namespace AnyBitStream
                     _bitsPosition++;
                 }
             }
+            UpdateReadStreamPointer();
             return bytesRead;
         }
 
@@ -825,6 +945,7 @@ namespace AnyBitStream
                     _bitsPosition++;
                 }
             }
+            UpdateReadStreamPointer();
             return bytesRead;
         }
 
@@ -851,6 +972,7 @@ namespace AnyBitStream
                     _bitsPosition++;
                 }
             }
+            UpdateReadStreamPointer();
             return bytesRead;
         }
 
@@ -876,6 +998,7 @@ namespace AnyBitStream
                     _bitsPosition++;
                 }
             }
+            UpdateReadStreamPointer();
             return bytesRead;
         }
 #endif
@@ -933,7 +1056,10 @@ namespace AnyBitStream
         public void SkipBytes(int count)
         {
             if (_bitsPosition == 0)
+            {
                 base.Position += count;
+                UpdateReadStreamPointer();
+            }
             else
                 _bitsPosition += count * 8;
         }
@@ -988,6 +1114,50 @@ namespace AnyBitStream
             base.WriteByte(_pendingByteValue);
             _pendingByteValue = 0;
             _hasPendingWrites = false;
+            UpdateWriteStreamPointer();
+        }
+
+        /// <summary>
+        /// If a base stream is used, update it's information
+        /// </summary>
+        private void UpdateWriteStreamPointer()
+        {
+            if (_streamPointer != null)
+            {
+                _capacityField.SetValue(_streamPointer, _capacityField.GetValue(this));
+                _originField.SetValue(_streamPointer, _originField.GetValue(this));
+                _expandableField.SetValue(_streamPointer, _expandableField.GetValue(this));
+                _writableField.SetValue(_streamPointer, _writableField.GetValue(this));
+                _exposableField.SetValue(_streamPointer, _exposableField.GetValue(this));
+                _isOpenField.SetValue(_streamPointer, _isOpenField.GetValue(this));
+                _positionField.SetValue(_streamPointer, _positionField.GetValue(this));
+                _lengthField.SetValue(_streamPointer, _lengthField.GetValue(this));
+                _bufferField.SetValue(_streamPointer, _bufferField.GetValue(this));
+            }
+        }
+
+        /// <summary>
+        /// If a base stream is used, update it's information
+        /// </summary>
+        private void UpdateReadStreamPointer()
+        {
+            if (_streamPointer != null)
+            {
+                _positionField.SetValue(_streamPointer, _positionField.GetValue(this));
+            }
+        }
+
+        private void InitializeStreamPointer(MemoryStream memoryStream)
+        {
+            _capacityField.SetValue(this, _capacityField.GetValue(memoryStream));
+            _originField.SetValue(this, _originField.GetValue(memoryStream));
+            _expandableField.SetValue(this, _expandableField.GetValue(memoryStream));
+            _writableField.SetValue(this, _writableField.GetValue(memoryStream));
+            _exposableField.SetValue(this, _exposableField.GetValue(memoryStream));
+            _isOpenField.SetValue(this, _isOpenField.GetValue(memoryStream));
+            _positionField.SetValue(this, _positionField.GetValue(memoryStream));
+            _lengthField.SetValue(this, _lengthField.GetValue(memoryStream));
+            _bufferField.SetValue(this, _bufferField.GetValue(memoryStream));
         }
 
         /// <summary>
@@ -995,7 +1165,7 @@ namespace AnyBitStream
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private int BitsSizeOf<T>()
+        private static int BitsSizeOf<T>()
         {
             var type = typeof(T);
             if (type == typeof(bool))
@@ -1036,8 +1206,15 @@ namespace AnyBitStream
 
         protected override void Dispose(bool disposing)
         {
-            if (_bitsPosition > 0 && _hasPendingWrites)
-                ForceFlush();
+            // if we are using a stream pointer, don't dispose anything as we don't own the resources.
+            if (_streamPointer != null)
+                return;
+
+            if (disposing)
+            {
+                if (_bitsPosition > 0 && _hasPendingWrites)
+                    ForceFlush();
+            }
             base.Dispose(disposing);
         }
     }
