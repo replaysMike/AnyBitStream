@@ -138,7 +138,7 @@ namespace AnyBitStream
 
         #region Overrides
 
-        public override void Write(bool value) => BaseStream.WriteBit(value);
+        public override void Write(bool value) => BaseStream.WriteByte((byte)(value ? 1 : 0));
 
         public override void Write(byte value) => BaseStream.WriteByte(value);
 
@@ -205,24 +205,6 @@ namespace AnyBitStream
         public void WriteBit(Bit value) => BaseStream.WriteBit(value);
 
         /// <summary>
-        /// Write a sequence of bits
-        /// </summary>
-        /// <param name="value"></param>
-        public void WriteBits(IEnumerable<Bit> value) => BaseStream.WriteBits(value);
-
-        /// <summary>
-        ///Write a sequence of bits
-        /// </summary>
-        /// <param name="value"></param>
-        public void WriteBits(IEnumerable<bool> value) => BaseStream.WriteBits(value);
-
-        /// <summary>
-        /// Write a sequence of bits
-        /// </summary>
-        /// <param name="value"></param>
-        public void WriteBits(IEnumerable<int> value) => BaseStream.WriteBits(value);
-
-        /// <summary>
         /// Write a single bit
         /// </summary>
         /// <param name="value"></param>
@@ -239,6 +221,24 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="value"></param>
         public void WriteBit(int value) => BaseStream.WriteBit(value);
+
+        /// <summary>
+        /// Write a sequence of bits
+        /// </summary>
+        /// <param name="value"></param>
+        public void WriteBits(IEnumerable<Bit> value) => BaseStream.WriteBits(value);
+
+        /// <summary>
+        ///Write a sequence of bits
+        /// </summary>
+        /// <param name="value"></param>
+        public void WriteBits(IEnumerable<bool> value) => BaseStream.WriteBits(value);
+
+        /// <summary>
+        /// Write a sequence of bits
+        /// </summary>
+        /// <param name="value"></param>
+        public void WriteBits(IEnumerable<int> value) => BaseStream.WriteBits(value);
 
         /// <summary>
         /// Write a value using a specified number of bits
@@ -470,7 +470,7 @@ namespace AnyBitStream
         {
             if (max > 1)
                 return WriteUe(value);
-            WriteBit(~value & 0x1);
+            WriteBit((Bit)(~value & 0x1));
             return 1;
         }
 

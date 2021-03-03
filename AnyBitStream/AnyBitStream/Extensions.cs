@@ -36,7 +36,7 @@ namespace AnyBitStream
             var bitArray = new Bit[bits];
             for(var i = 0; i < bitArray.Length; i++)
             {
-                bitArray[i] = (byte)(value >> i & 0x1);
+                bitArray[i] = (Bit)(value >> i & 0x1);
             }
             return bitArray;
         }
@@ -61,7 +61,7 @@ namespace AnyBitStream
             for (var i = 0; i < bitArray.Length; i++)
             {
                 var b = i / bitsInByte;
-                bitArray[i] = (byte)(value[b] >> (i % bitsInByte) & 0x1);
+                bitArray[i] = (Bit)(value[b] >> (i % bitsInByte) & 0x1);
             }
             return bitArray;
         }
@@ -84,7 +84,7 @@ namespace AnyBitStream
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
             {
-                bitArray[i] = (byte)(value >> i & 0x1);
+                bitArray[i] = (Bit)(value >> i & 0x1);
             }
             return bitArray;
         }
@@ -107,7 +107,7 @@ namespace AnyBitStream
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
             {
-                bitArray[i] = (byte)(value >> i & 0x1);
+                bitArray[i] = (Bit)(value >> i & 0x1);
             }
             return bitArray;
         }
@@ -130,7 +130,7 @@ namespace AnyBitStream
             var bitArray = new Bit[bits];
             for (var i = 0; i < bitArray.Length; i++)
             {
-                bitArray[i] = (byte)(value >> i & 0x1);
+                bitArray[i] = (Bit)(value >> i & 0x1);
             }
             return bitArray;
         }

@@ -37,7 +37,7 @@ namespace AnyBitStream
             _sign = value < 0;
         }
 
-        public Bit GetBit(int index) => index < BitSize - 1 ? (byte)(_value >> index & 0x1) : (_sign ? 1 : 0);
+        public Bit GetBit(int index) => (Bit)(index < BitSize - 1 ? (byte)(_value >> index & 0x1) : (_sign ? 1 : 0));
         public Bit[] GetBits() => new Bit[BitSize] { GetBit(0), GetBit(1), GetBit(2), GetBit(3), GetBit(4), GetBit(5), GetBit(6), GetBit(7), GetBit(8), GetBit(9), GetBit(10), _sign };
 
         public static explicit operator Int12(int value) => new Int12(value);
@@ -125,7 +125,7 @@ namespace AnyBitStream
             _value = (short)(value & 0xFFF);
         }
 
-        public Bit GetBit(int index) => (byte)(_value >> index & 0x1);
+        public Bit GetBit(int index) => (Bit)((byte)(_value >> index & 0x1));
         public Bit[] GetBits() => new Bit[BitSize] { GetBit(0), GetBit(1), GetBit(2), GetBit(3), GetBit(4), GetBit(5), GetBit(6), GetBit(7), GetBit(8), GetBit(9), GetBit(10), GetBit(11) };
 
         public static explicit operator UInt12(ulong value) => new UInt12(value);

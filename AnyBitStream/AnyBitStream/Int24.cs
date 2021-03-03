@@ -43,7 +43,7 @@ namespace AnyBitStream
             _sign = (byte)(bytes[2] >> 7 & 0x1) == 0x1;
         }
 
-        public Bit GetBit(int index) => index < BitSize - 1 ? (byte)(_value >> index & 0x1) : (_sign ? 1 : 0);
+        public Bit GetBit(int index) => (Bit)(index < BitSize - 1 ? (byte)(_value >> index & 0x1) : (_sign ? 1 : 0));
 
         public Bit[] GetBits()
         {
@@ -153,7 +153,7 @@ namespace AnyBitStream
             _value = bytes[0] + bytes[1] << 8 + bytes[2] << 16;
         }
 
-        public Bit GetBit(int index) => (byte)(_value >> index & 0x1);
+        public Bit GetBit(int index) => (Bit)(_value >> index & 0x1);
 
         public Bit[] GetBits() {
             var bits = new Bit[BitSize];

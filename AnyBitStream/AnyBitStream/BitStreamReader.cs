@@ -158,7 +158,7 @@ namespace AnyBitStream
 #endif
 
         /// <inheritdoc />
-        public override bool ReadBoolean() => BaseStream.ReadBit();
+        public override bool ReadBoolean() => BaseStream.ReadByte() == 1 ? true : false;
 
         /// <inheritdoc />
         public override byte[] ReadBytes(int count)
@@ -269,6 +269,12 @@ namespace AnyBitStream
         #endregion
 
         #region Read types methods
+
+        /// <summary>
+        /// Read a single bit and return it as a boolean
+        /// </summary>
+        /// <returns></returns>
+        public bool ReadBitAsBool() => BaseStream.ReadBit();
 
         /// <summary>
         /// Read a single bit
@@ -598,7 +604,7 @@ namespace AnyBitStream
             if (max > 1)
                 return ReadUe(out bitCount);
             bitCount = 1;
-            return ~ReadBit() & 0x1;
+            return ~(uint)ReadBit() & 0x1;
         }
 
         #endregion

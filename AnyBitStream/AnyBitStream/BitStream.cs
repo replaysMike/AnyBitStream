@@ -294,7 +294,7 @@ namespace AnyBitStream
         /// Write a single bit
         /// </summary>
         /// <param name="value"></param>
-        public void WriteBit(Bit value) => WriteBitsInternal(value, 1);
+        public void WriteBit(Bit value) => WriteBitsInternal((long)value, 1);
 
         /// <summary>
         /// Write a single bit
@@ -842,7 +842,7 @@ namespace AnyBitStream
                 }
 
                 var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1L;
-                returnValue[i] = bit;
+                returnValue[i] = (Bit)bit;
                 _bitsPosition++;
             }
             UpdateReadStreamPointer();

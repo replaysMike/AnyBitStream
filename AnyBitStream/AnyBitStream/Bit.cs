@@ -40,15 +40,15 @@ namespace AnyBitStream
         }
 
         public static implicit operator Bit(bool value) => new Bit(value);
-        public static implicit operator Bit(byte value) => new Bit(value);
-        public static implicit operator Bit(short value) => new Bit(value);
+        public static explicit operator Bit(byte value) => new Bit(value);
+        public static explicit operator Bit(short value) => new Bit(value);
         public static implicit operator Bit(int value) => new Bit(value);
-        public static implicit operator Bit(long value) => new Bit(value);
+        public static explicit operator Bit(long value) => new Bit(value);
         public static implicit operator bool(Bit value) => value._value;
-        public static implicit operator byte(Bit value) => (byte)(value._value ? 1 : 0);
-        public static implicit operator short(Bit value) => (short)(value._value ? 1 : 0);
-        public static implicit operator int(Bit value) => value._value ? 1 : 0;
-        public static implicit operator long(Bit value) => value._value ? 1 : 0;
+        public static explicit operator byte(Bit value) => (byte)(value._value ? 1 : 0);
+        public static explicit operator short(Bit value) => (short)(value._value ? 1 : 0);
+        public static explicit operator int(Bit value) => value._value ? 1 : 0;
+        public static explicit operator long(Bit value) => value._value ? 1 : 0;
 
         public static bool operator ==(Bit bit1, Bit bit2) => bit1._value.Equals(bit2._value);
         public static bool operator !=(Bit bit1, Bit bit2) => !(bit1 == bit2);
@@ -69,13 +69,23 @@ namespace AnyBitStream
         public static bool operator >=(Bit bit1, Bit bit2) => (bit1._value ? 1 : 0) >= (bit2._value ? 1 : 0);
         public static bool operator <=(Bit bit1, Bit bit2) => (bit1._value ? 1 : 0) <= (bit2._value ? 1 : 0);
 
+        public static int operator +(Bit bit1, int value) => (bit1._value ? 1 : 0) + value;
+        public static int operator +(int value, Bit bit) => (bit._value ? 1 : 0) + value;
+        public static int operator -(Bit bit1, int value) => (bit1._value ? 1 : 0) - value;
+        public static int operator -(int value, Bit bit) => value - (bit._value ? 1 : 0);
+        public static int operator >>(Bit bit1, int shiftValue) => (bit1._value ? 1 : 0) >> shiftValue;
+        public static int operator <<(Bit bit1, int shiftValue) => (bit1._value ? 1 : 0) << shiftValue;
+
+        public static Bit operator --(Bit bit1) => (bit1._value ? 1 : 0) - 1;
+        public static Bit operator ++(Bit bit1) => (bit1._value ? 1 : 0) + 1;
+
         public static Bit operator &(Bit x, Bit y) => x._value & y._value;
 
         public static Bit operator |(Bit x, Bit y) => x._value | y._value;
 
         public static Bit operator ^(Bit x, Bit y) => x._value ^ y._value;
 
-        public static Bit operator ~(Bit bit) => ~((bit._value ? 1 : 0) & 1);
+        public static Bit operator ~(Bit bit) => ~(Bit)((bit._value ? 1 : 0) & 1);
 
 
         public override bool Equals(object obj)

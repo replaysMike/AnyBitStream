@@ -50,7 +50,7 @@ namespace AnyBitStream
             _sign = (bytes[5] >> 7 & 0x1) == 0x1;
         }
 
-        public Bit GetBit(int index) => index < BitSize - 1 ? (byte)((long)this >> index & 0x1) : (_sign ? 1 : 0);
+        public Bit GetBit(int index) => (Bit)(index < BitSize - 1 ? (byte)((long)this >> index & 0x1) : (_sign ? 1 : 0));
 
         public Bit[] GetBits()
         {
@@ -172,7 +172,7 @@ namespace AnyBitStream
             _value = new byte[BitSize / 8] { bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5] };
         }
 
-        public Bit GetBit(int index) => (byte)((ulong)this >> index) & 0x1;
+        public Bit GetBit(int index) => (Bit)((byte)((ulong)this >> index) & 0x1);
 
         public Bit[] GetBits()
         {
