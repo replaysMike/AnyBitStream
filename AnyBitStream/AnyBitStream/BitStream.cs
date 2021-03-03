@@ -14,6 +14,8 @@ namespace AnyBitStream
 
     public class BitStream : MemoryStream
     {
+        private const bool DefaultPubliclyVisible = true;
+        private const bool DefaultWritable = true;
         private const bool DefaultAllowUnalignedOperations = false;
         /// <summary>
         /// The current bit position
@@ -153,7 +155,7 @@ namespace AnyBitStream
         }
 
         /// <inheritdoc />
-        public BitStream(byte[] buffer) : base(buffer)
+        public BitStream(byte[] buffer) : base(buffer, 0, buffer.Length, DefaultWritable, DefaultPubliclyVisible)
         {
         }
 
@@ -161,7 +163,7 @@ namespace AnyBitStream
         /// Initializes a new non-resizable instance of the <see cref="BitStream"/> class based on the specified region of the ArraySegment
         /// </summary>
         /// <param name="buffer"></param>
-        public BitStream(ArraySegment<byte> buffer) : base(buffer.Array, buffer.Offset, buffer.Count)
+        public BitStream(ArraySegment<byte> buffer) : base(buffer.Array, buffer.Offset, buffer.Count, DefaultWritable, DefaultPubliclyVisible)
         {
         }
 
@@ -171,7 +173,7 @@ namespace AnyBitStream
         }
 
         /// <inheritdoc />
-        public BitStream(byte[] buffer, bool writable) : base(buffer, writable)
+        public BitStream(byte[] buffer, bool writable) : base(buffer, 0, buffer.Length, writable, DefaultPubliclyVisible)
         {
         }
 
@@ -181,18 +183,18 @@ namespace AnyBitStream
         /// <param name="buffer"></param>
         /// <param name="writable"></param>
         /// <param name="allowUnalignedOperations">True to allow unaligned operations</param>
-        public BitStream(byte[] buffer, bool writable, bool allowUnalignedOperations) : base(buffer, writable)
+        public BitStream(byte[] buffer, bool writable, bool allowUnalignedOperations) : base(buffer, 0, buffer.Length, writable, DefaultPubliclyVisible)
         {
             AllowUnalignedOperations = allowUnalignedOperations;
         }
 
         /// <inheritdoc />
-        public BitStream(byte[] buffer, int index, int count) : base(buffer, index, count)
+        public BitStream(byte[] buffer, int index, int count) : base(buffer, index, count, DefaultWritable, DefaultPubliclyVisible)
         {
         }
 
         /// <inheritdoc />
-        public BitStream(byte[] buffer, int index, int count, bool writable) : base(buffer, index, count, writable)
+        public BitStream(byte[] buffer, int index, int count, bool writable) : base(buffer, index, count, writable, DefaultPubliclyVisible)
         {
         }
 
@@ -1115,6 +1117,27 @@ namespace AnyBitStream
             _pendingByteValue = 0;
             _hasPendingWrites = false;
             UpdateWriteStreamPointer();
+        }
+
+        /// <summary>
+        /// Replace the underlying buffer without allocating new resources.
+        /// The position will be reset to 0, and the length and capacity will adopt the new buffer's length.
+        /// </summary>
+        /// <param name="buffer">The new buffer to use</param>
+        public void ReplaceBuffer(byte[] buffer)
+        {
+            // ensure the base stream no longer has references to the old buffer, so it is garbage collected
+            _bufferField.SetValue(this, null);
+
+            _capacityField.SetValue(this, buffer.Length);
+            _originField.SetValue(this, 0);
+            _expandableField.SetValue(this, false);
+            _writableField.SetValue(this, true);
+            _exposableField.SetValue(this, true);
+            _isOpenField.SetValue(this, true);
+            _positionField.SetValue(this, 0);
+            _lengthField.SetValue(this, buffer.Length);
+            _bufferField.SetValue(this, buffer);
         }
 
         /// <summary>

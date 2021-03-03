@@ -4,6 +4,7 @@
 		<TargetFrameworks>netcoreapp3.1;net461;net462;net48;net5.0</TargetFrameworks>
 
 		<IsPackable>false</IsPackable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>

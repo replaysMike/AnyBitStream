@@ -136,6 +136,14 @@ namespace AnyBitStream
         {
         }
 
+        /// <summary>
+        /// Replace the underlying buffer without allocating new resources.
+        /// The position will be reset to 0, and the length and capacity will adopt the new buffer's length.
+        /// </summary>
+        /// <param name="buffer">The new buffer to use</param>
+        public void ReplaceBuffer(byte[] buffer)
+            => BaseStream.ReplaceBuffer(buffer);
+
         #region Overrides
 
         public override void Write(bool value) => BaseStream.WriteByte((byte)(value ? 1 : 0));

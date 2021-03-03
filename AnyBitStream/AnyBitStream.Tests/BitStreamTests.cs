@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 using NUnit.Framework;
 
 namespace AnyBitStream.Tests
@@ -80,6 +82,52 @@ namespace AnyBitStream.Tests
             Assert.AreEqual(bytes[2], byte3);
             Assert.AreEqual(bytes[3], byte4);
             Assert.AreEqual(bytes[4], byte5);
+        }
+
+        [Test]
+        public void Should_ReplaceBuffer()
+        {
+            var bufferRef = new WeakReference(new byte[8 * 1024 * 1024]);
+            
+            var stream = new BitStream(bufferRef.Target as byte[]);
+            stream.Position = 1;
+            stream.WriteByte(0xAA);
+            stream.WriteByte(0xBB);
+            var internalBuffer1 = stream.GetBuffer();
+            //Assert.AreEqual(buffer1.Length, internalBuffer1.Length);
+            Assert.AreEqual(0x00, internalBuffer1[0]);
+            Assert.AreEqual(0xAA, internalBuffer1[1]);
+            Assert.AreEqual(0xBB, internalBuffer1[2]);
+            Assert.AreEqual(0x00, internalBuffer1[3]);
+
+            // replace the buffer with a new buffer
+            var buffer2 = new byte[300];
+            stream.ReplaceBuffer(buffer2);
+            stream.Position = 1;
+            stream.WriteByte(0xDD);
+            stream.WriteByte(0xEE);
+            var internalBuffer2 = stream.GetBuffer();
+            Assert.AreEqual(buffer2.Length, internalBuffer2.Length);
+            Assert.AreEqual(0x00, internalBuffer2[0]);
+            Assert.AreEqual(0xDD, internalBuffer2[1]);
+            Assert.AreEqual(0xEE, internalBuffer2[2]);
+            Assert.AreEqual(0x00, internalBuffer2[3]);
+
+            // ideally we would do a GC.Collection() and check if the weak reference is alive,
+            // but it seems that isn't reliable or doesn't work at all as it always returns true.
+            // so we will assume this just works :)
+        }
+
+        private static IntPtr GetAddress(object o)
+        {
+            if (o == null)
+                return IntPtr.Zero;
+            unsafe
+            {
+                var tr = __makeref(o);
+                var ptr = **(System.IntPtr**)(&tr);
+                return ptr;
+            }
         }
     }
 }
