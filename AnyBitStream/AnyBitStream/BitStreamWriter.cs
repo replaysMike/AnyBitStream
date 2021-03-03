@@ -207,6 +207,32 @@ namespace AnyBitStream
         public void Align() => BaseStream.Align();
 
         /// <summary>
+        /// Write a byte array
+        /// </summary>
+        /// <param name="buffer">A byte array containing the data to write.</param>
+        public void Write(ArraySegment<byte> buffer) => Write(buffer.Array, buffer.Offset, buffer.Count);
+
+        /// <summary>
+        /// Write a byte array
+        /// </summary>
+        /// <param name="buffer">A byte array containing the data to write.</param>
+        public void WriteBytes(ArraySegment<byte> buffer) => Write(buffer);
+
+        /// <summary>
+        /// Writes a region of a byte array to the current stream.
+        /// </summary>
+        /// <param name="buffer">A byte array containing the data to write.</param>
+        public void WriteBytes(byte[] buffer) => Write(buffer, 0, buffer.Length);
+
+        /// <summary>
+        /// Write a byte array
+        /// </summary>
+        /// <param name="buffer">A byte array containing the data to write.</param>
+        /// <param name="offset">The starting point in buffer at which to begin writing.</param>
+        /// <param name="length">The number of bytes to write.</param>
+        public void WriteBytes(byte[] buffer, int offset, int length) => Write(buffer, offset, length);
+
+        /// <summary>
         /// Write a single bit
         /// </summary>
         /// <param name="value"></param>

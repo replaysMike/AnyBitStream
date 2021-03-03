@@ -279,6 +279,29 @@ namespace AnyBitStream
         #region Read types methods
 
         /// <summary>
+        /// Reads a block of bytes from the current stream and writes the data to a buffer.
+        /// </summary>
+        /// <param name="buffer">When this method returns, contains the specified byte array with the values between offset and (offset + count - 1) replaced by the characters read from the current stream.</param>
+        /// <returns></returns>
+        public int Read(ArraySegment<byte> buffer) => BaseStream.Read(buffer.Array, buffer.Offset, buffer.Count);
+
+        /// <summary>
+        /// Reads a block of bytes from the current stream and writes the data to a buffer.
+        /// </summary>
+        /// <param name="buffer">When this method returns, contains the specified byte array with the values between offset and (offset + count - 1) replaced by the characters read from the current stream.</param>
+        /// <param name="index">The zero-based byte offset in buffer at which to begin storing data from the current stream.</param>
+        /// <param name="count">The maximum number of bytes to read.</param>
+        /// <returns></returns>
+        public int ReadBytes(byte[] buffer, int index, int count) => BaseStream.Read(buffer, index, count);
+
+        /// <summary>
+        /// Reads a block of bytes from the current stream and writes the data to a buffer.
+        /// </summary>
+        /// <param name="buffer">When this method returns, contains the specified byte array with the values between offset and (offset + count - 1) replaced by the characters read from the current stream.</param>
+        /// <returns></returns>
+        public int ReadBytes(ArraySegment<byte> buffer) => BaseStream.Read(buffer.Array, buffer.Offset, buffer.Count);
+
+        /// <summary>
         /// Read a single bit and return it as a boolean
         /// </summary>
         /// <returns></returns>
