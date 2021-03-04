@@ -66,6 +66,16 @@ namespace AnyBitStream.Tests
         }
 
         [Test]
+        public void Should_Seek_BitPosition()
+        {
+            Stream stream = new MemoryStream(new byte[] { 0xFF, 0xAA, 0xBB, 0x00 });
+            var bitStream = new BitStream(stream);
+            bitStream.BitsPosition = 10;
+            Assert.AreEqual(2, bitStream.BitsPosition);
+            Assert.AreEqual(1, bitStream.Position);
+        }
+
+        [Test]
         public void Should_ReadConsecutiveByte_FromStream()
         {
             var bytes = new byte[] { 0xFF, 0xAA, 0xBB, 0xCC, 0xDD };

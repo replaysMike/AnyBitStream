@@ -72,9 +72,18 @@ namespace AnyBitStream
         public bool IsUnaligned => _bitsPosition % 8 > 0;
 
         /// <summary>
-        /// Get the bits position of the stream
+        /// Get/sets the bits position of the stream
         /// </summary>
-        public int BitsPosition => _bitsPosition;
+        public int BitsPosition
+        {
+            get {
+                return _bitsPosition;
+            }
+            set {
+                _bitsPosition = value % 8;
+                Position = value / 8;
+            }
+        }
 
         /// <inheritdoc />
         public override long Position
@@ -290,6 +299,35 @@ namespace AnyBitStream
         public void Align()
         {
             FlushIfUnaligned();
+        }
+
+        /// <summary>
+        /// Write the contents of one stream to another from it's current position
+        /// </summary>
+        /// <param name="stream">The stream to copy</param>
+        public void Write(Stream stream)
+        {
+            var buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
+            Write(buffer, 0, buffer.Length);
+        }
+
+        /// <summary>
+        /// Write the contents of one stream to another from a specified position and length
+        /// </summary>
+        /// <param name="stream">The stream to copy</param>
+        /// <param name="offset">The offset from which to start copying from</param>
+        /// <param name="length">The length to copy</param>
+        public void Write(Stream stream, int offset, int length)
+        {
+            if (offset > stream.Length)
+                throw new ArgumentOutOfRangeException(nameof(offset), $"Value must be within the range of the stream.");
+            if (length > stream.Length - offset)
+                throw new ArgumentOutOfRangeException(nameof(offset), $"Value must be within the range of the stream.");
+            var buffer = new byte[length];
+            stream.Position = offset;
+            stream.Read(buffer, 0, buffer.Length);
+            Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -822,6 +860,48 @@ namespace AnyBitStream
                 throw new StreamUnalignedException($"There are {8 - _bitsPosition} bits that have not been written to the stream. Either write more bits, flush the pending bits to the stream, or enable {nameof(AllowUnalignedOperations)}!");
         }
 
+        /// <summary>
+        /// Peek a number of bytes without moving the stream pointer
+        /// </summary>
+        /// <param name="count">The number of bytes to read</param>
+        /// <returns></returns>
+        internal int PeekByte()
+        {
+            var startBitPosition = _bitsPosition;
+            var startPosition = Position;
+            try
+            {
+                return ReadByte();
+            }
+            finally
+            {
+                _bitsPosition = startBitPosition;
+                Position = startPosition;
+            }
+        }
+
+        /// <summary>
+        /// Peek a number of bytes without moving the stream pointer
+        /// </summary>
+        /// <param name="count">The number of bytes to read</param>
+        /// <returns></returns>
+        internal byte[] PeekBytes(int count)
+        {
+            var startBitPosition = _bitsPosition;
+            var startPosition = Position;
+            try
+            {
+                var buffer = new byte[count];
+                Read(buffer, 0, count);
+                return buffer;
+            }
+            finally
+            {
+                _bitsPosition = startBitPosition;
+                Position = startPosition;
+            }
+        }
+
         internal T ReadBitsInternal<T>(int bits)
             where T : struct
         {
@@ -840,12 +920,13 @@ namespace AnyBitStream
                 if (_bitsPosition % 8 == 0)
                 {
                     Debug.WriteLine($"");
-                    _pendingByteValue = (byte)ReadByte();
+                    _pendingByteValue = (byte)PeekByte();
                 }
 
                 var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1L;
                 returnValue[i] = (Bit)bit;
                 _bitsPosition++;
+                MovePointerOnByteBoundary();
             }
             UpdateReadStreamPointer();
             return returnValue;
@@ -860,13 +941,14 @@ namespace AnyBitStream
             {
                 if (_bitsPosition % 8 == 0)
                 {
-                    _pendingByteValue = (byte)ReadByte();
+                    _pendingByteValue = (byte)PeekByte();
                 }
 
                 var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1L;
                 var bitValue = bit << i;
                 returnValue += bitValue;
                 _bitsPosition++;
+                MovePointerOnByteBoundary();
             }
             UpdateReadStreamPointer();
             return returnValue;
@@ -881,13 +963,14 @@ namespace AnyBitStream
             {
                 if (_bitsPosition % 8 == 0)
                 {
-                    _pendingByteValue = (byte)ReadByte();
+                    _pendingByteValue = (byte)PeekByte();
                 }
 
                 var bit = (ulong)((_pendingByteValue >> (_bitsPosition % 8))) & 0x1;
                 var bitValue = bit << i;
                 returnValue += bitValue;
                 _bitsPosition++;
+                MovePointerOnByteBoundary();
             }
             UpdateReadStreamPointer();
             return returnValue;
@@ -912,13 +995,14 @@ namespace AnyBitStream
                 {
                     if (_bitsPosition % 8 == 0)
                     {
-                        _pendingByteValue = (byte)ReadByte();
+                        _pendingByteValue = (byte)PeekByte();
                     }
 
                     var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1;
                     var bitValue = bit << i;
                     buffer[b] += (byte)bitValue;
                     _bitsPosition++;
+                    MovePointerOnByteBoundary();
                 }
             }
             UpdateReadStreamPointer();
@@ -938,13 +1022,14 @@ namespace AnyBitStream
                 {
                     if (_bitsPosition % 8 == 0)
                     {
-                        _pendingByteValue = (byte)ReadByte();
+                        _pendingByteValue = (byte)PeekByte();
                     }
 
                     var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1;
                     var bitValue = bit << i;
                     buffer[b] += (char)bitValue;
                     _bitsPosition++;
+                    MovePointerOnByteBoundary();
                 }
             }
             UpdateReadStreamPointer();
@@ -965,13 +1050,14 @@ namespace AnyBitStream
                 {
                     if (_bitsPosition % 8 == 0)
                     {
-                        _pendingByteValue = (byte)ReadByte();
+                        _pendingByteValue = (byte)PeekByte();
                     }
 
                     var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1;
                     var bitValue = bit << i;
                     destination[b] += (byte)bitValue;
                     _bitsPosition++;
+                    MovePointerOnByteBoundary();
                 }
             }
             UpdateReadStreamPointer();
@@ -991,13 +1077,14 @@ namespace AnyBitStream
                 {
                     if (_bitsPosition % 8 == 0)
                     {
-                        _pendingByteValue = (byte)ReadByte();
+                        _pendingByteValue = (byte)PeekByte();
                     }
 
                     var bit = (_pendingByteValue >> (_bitsPosition % 8)) & 0x1;
                     var bitValue = bit << i;
                     destination[b] += (char)bitValue;
                     _bitsPosition++;
+                    MovePointerOnByteBoundary();
                 }
             }
             UpdateReadStreamPointer();
@@ -1100,6 +1187,20 @@ namespace AnyBitStream
         /// If there is a pending byte with partial bits written,
         /// flush the value out as a byte with the rest of the bits being padded to zero
         /// </summary>
+        internal virtual void MovePointerOnByteBoundary()
+        {
+            if (_bitsPosition > 0 && _bitsPosition % 8 == 0)
+            {
+                _bitsPosition = 0;
+                _pendingByteValue = 0;
+                Position++;
+            }
+        }
+
+        /// <summary>
+        /// If there is a pending byte with partial bits written,
+        /// flush the value out as a byte with the rest of the bits being padded to zero
+        /// </summary>
         internal virtual void FlushOnByteBoundary()
         {
             if (_bitsPosition > 0 && _bitsPosition % 8 == 0 && _hasPendingWrites)
@@ -1114,6 +1215,7 @@ namespace AnyBitStream
         internal void ForceFlush()
         {
             base.WriteByte(_pendingByteValue);
+            _bitsPosition = 0;
             _pendingByteValue = 0;
             _hasPendingWrites = false;
             UpdateWriteStreamPointer();

@@ -61,6 +61,36 @@ namespace AnyBitStream.Tests
         }
 
         [Test]
+        public void ShouldNot_AssertMixedBehavior()
+        {
+            var bytes = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+            var stream = new BitStream(bytes);
+            stream.AllowUnalignedOperations = true;
+            var reader = new BitStreamReader(stream);
+            var bit1 = reader.ReadUInt4();
+            Assert.AreEqual(4, stream.BitsPosition);
+            Assert.AreEqual(0, stream.Position);
+            var bit2 = reader.ReadUInt4();
+            Assert.AreEqual(0, stream.BitsPosition);
+            Assert.AreEqual(1, stream.Position);
+            var bit3 = reader.ReadUInt24();
+            Assert.AreEqual(0, stream.BitsPosition);
+            Assert.AreEqual(4, stream.Position);
+            var bit4 = reader.ReadUInt24();
+            Assert.AreEqual(0, stream.BitsPosition);
+            Assert.AreEqual(7, stream.Position);
+            var bit5 = reader.ReadUInt32();
+            Assert.AreEqual(0, stream.BitsPosition);
+            Assert.AreEqual(11, stream.Position);
+            var bit6 = reader.ReadUInt4();
+            Assert.AreEqual(4, stream.BitsPosition);
+            Assert.AreEqual(11, stream.Position);
+            var bit7 = reader.ReadUInt12();
+            Assert.AreEqual(0, stream.BitsPosition);
+            Assert.AreEqual(13, stream.Position);
+        }
+
+        [Test]
         public void Should_ReadInt32()
         {
             var bytes = BitConverter.GetBytes(123);

@@ -11,7 +11,7 @@ namespace AnyBitStream.Tests
             var stream = new BitStream(true);
             stream.WriteBits(2, 2);
             stream.WriteBits(7, 4);
-            Assert.AreEqual(2 + 4, stream._bitsPosition);
+            Assert.AreEqual(2 + 4, stream.BitsPosition);
             var bytes = stream.ToArray();
             // 01 + 1110 = 30
             Assert.AreEqual(new byte[] { 30 }, bytes);
@@ -28,7 +28,8 @@ namespace AnyBitStream.Tests
             stream.WriteBits(29, 5);
             stream.WriteBits(13, 5);
             // 38 bits total
-            Assert.AreEqual(38, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(4, stream.Position);
             var bytes = stream.ToArray();
             // 01 + 1110 + 1010 0111 0011 + 1010 0101 11 + 1011 1 + 1011 0
             // byte 0 = 0111 1010 = 94
@@ -45,7 +46,7 @@ namespace AnyBitStream.Tests
             var stream = new BitStream(true);
             stream.Write((UInt2)2);
             stream.Write((UInt4)7);
-            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream._bitsPosition);
+            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream.BitsPosition);
             var bytes = stream.ToArray();
             // 01 + 1110 = 30
             Assert.AreEqual(new byte[] { 30 }, bytes);
@@ -62,7 +63,8 @@ namespace AnyBitStream.Tests
             stream.Write((UInt5)29);
             stream.Write((UInt5)13);
             // 38 bits total
-            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize + UInt12.BitSize + UInt10.BitSize + UInt5.BitSize + UInt5.BitSize, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(4, stream.Position);
             // 5 bytes total
             var bytes = stream.ToArray();
             // 01 + 1110 + 1010 0111 0011 + 1010 0101 11 + 1011 1 + 1011 0
@@ -81,7 +83,7 @@ namespace AnyBitStream.Tests
             stream.Write((UInt2)2);
             stream.Write((UInt4)7);
             // 6 bits written
-            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream._bitsPosition);
+            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream.BitsPosition);
             // write a full byte. We are unaligned, so the bits will be flushed first.
             stream.WriteByte(0xFF);
 
@@ -98,7 +100,7 @@ namespace AnyBitStream.Tests
             stream.Write((UInt2)2);
             stream.Write((UInt4)7);
             // 6 bits written
-            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream._bitsPosition);
+            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream.BitsPosition);
             // we are unaligned, this should fail
             Assert.Throws<StreamUnalignedException>(() => stream.WriteByte(0xFF));
         }
@@ -110,7 +112,7 @@ namespace AnyBitStream.Tests
             stream.Write((UInt2)2);
             stream.Write((UInt4)7);
             // 6 bits written
-            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream._bitsPosition);
+            Assert.AreEqual(UInt2.BitSize + UInt4.BitSize, stream.BitsPosition);
             // align the bits (write 2 0 bits)
             stream.Align();
             // write a full byte.

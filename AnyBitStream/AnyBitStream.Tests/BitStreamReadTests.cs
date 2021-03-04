@@ -15,7 +15,8 @@ namespace AnyBitStream.Tests
             var stream = new BitStream(_testData1);
             var bits1 = stream.ReadBits(2);
             var bits2 = stream.ReadBits(4);
-            Assert.AreEqual(6, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(0, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
         }
@@ -30,7 +31,8 @@ namespace AnyBitStream.Tests
             var bits4 = stream.ReadBits(10);
             var bits5 = stream.ReadBits(5);
             var bits6 = stream.ReadBits(5);
-            Assert.AreEqual(38, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(4, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
             Assert.AreEqual(3301, bits3);
@@ -45,7 +47,8 @@ namespace AnyBitStream.Tests
             var stream = new BitStream(_testData1);
             var bits1 = stream.ReadUInt2();
             var bits2 = stream.ReadUInt4();
-            Assert.AreEqual(6, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(0, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
         }
@@ -60,7 +63,8 @@ namespace AnyBitStream.Tests
             var bits4 = stream.ReadUInt10();
             var bits5 = stream.ReadUInt5();
             var bits6 = stream.ReadUInt5();
-            Assert.AreEqual(38, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(4, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
             Assert.AreEqual(3301, bits3);
@@ -77,7 +81,8 @@ namespace AnyBitStream.Tests
             var bits1 = stream.ReadUInt2();
             var bits2 = stream.ReadUInt4();
             // 6 bits written
-            Assert.AreEqual(6, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(0, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
             // read a full byte unaligned
@@ -92,7 +97,8 @@ namespace AnyBitStream.Tests
             var bits1 = stream.ReadUInt2();
             var bits2 = stream.ReadUInt4();
             // 6 bits written
-            Assert.AreEqual(6, stream._bitsPosition);
+            Assert.AreEqual(6, stream.BitsPosition);
+            Assert.AreEqual(0, stream.Position);
             Assert.AreEqual(2, bits1);
             Assert.AreEqual(7, bits2);
             // we are unaligned, this should fail

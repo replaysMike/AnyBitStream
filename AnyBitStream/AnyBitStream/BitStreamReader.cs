@@ -525,18 +525,14 @@ namespace AnyBitStream
         /// </summary>
         /// <param name="count">The number of bytes to read</param>
         /// <returns></returns>
-        public byte[] PeekBytes(int count)
-        {
-            var startBitPosition = BaseStream._bitsPosition;
-            try
-            {
-                return ReadBytes(count);
-            }
-            finally
-            {
-                BaseStream._bitsPosition = startBitPosition;
-            }
-        }
+        public int PeekByte() => BaseStream.PeekByte();
+
+        /// <summary>
+        /// Peek a number of bytes without moving the stream pointer
+        /// </summary>
+        /// <param name="count">The number of bytes to read</param>
+        /// <returns></returns>
+        public byte[] PeekBytes(int count) => BaseStream.PeekBytes(count);
 
         /// <summary>
         /// Skip a specified number of bytes
