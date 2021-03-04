@@ -71,6 +71,14 @@ namespace AnyBitStream
         }
 
         /// <summary>
+        /// Write bits to a buffer
+        /// </summary>
+        /// <param name="buffer"></param>
+        public BitStreamWriter(ArraySegment<byte> buffer) : this(buffer.Array, buffer.Offset, buffer.Count)
+        {
+        }
+
+        /// <summary>
         /// Write bits to a stream
         /// </summary>
         /// <param name="buffer"></param>

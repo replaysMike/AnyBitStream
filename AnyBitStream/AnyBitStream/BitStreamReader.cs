@@ -42,7 +42,7 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         public BitStreamReader(byte[] buffer) : this(new BitStream(buffer))
@@ -50,7 +50,7 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="leaveOpen">True to leave the stream open when disposed</param>
@@ -59,7 +59,7 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="leaveOpen">True to leave the stream open when disposed</param>
@@ -69,7 +69,7 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         public BitStreamReader(byte[] buffer, Encoding encoding) : this(new BitStream(buffer), encoding, DefaultLeaveOpen)
@@ -77,7 +77,7 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="encoding"></param>
@@ -87,12 +87,20 @@ namespace AnyBitStream
         }
 
         /// <summary>
-        /// Read bits from a stream
+        /// Read bits from a buffer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
         public BitStreamReader(byte[] buffer, int offset, int count) : this(new BitStream(buffer, offset, count))
+        {
+        }
+
+        /// <summary>
+        /// Read bits from a buffer
+        /// </summary>
+        /// <param name="buffer"></param>
+        public BitStreamReader(ArraySegment<byte> buffer) : this(buffer.Array, buffer.Offset, buffer.Count)
         {
         }
 
